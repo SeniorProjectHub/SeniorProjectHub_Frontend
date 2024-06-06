@@ -15,10 +15,26 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import DocumentCard from '@/components/DocumentCard.vue';
+import  { DocumentItem }  from '@/type';
 
 const informations = ref([])
 const error = ref(null)
 const router = useRouter()
+
+const documents = ref<DocumentItem[0]>([
+  {
+    id: 59,
+    title: 'test1',
+    date: 'Monday'
+  },
+  {
+    id: 519,
+    title: 'test2',
+    date: 'Tuesday'
+  }
+])
+
 
 const fetchInformations = async () => {
   try {
@@ -40,9 +56,15 @@ const viewInformation = (id) => {
 onMounted(fetchInformations)
 </script>
 
-<style>
+<style scoped>
 .error {
   color: red;
   font-weight: bold;
+}
+
+.document {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 </style>

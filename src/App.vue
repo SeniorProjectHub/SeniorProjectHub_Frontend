@@ -28,14 +28,30 @@ import { RouterLink, RouterView } from 'vue-router'
   color: #fff;
 }
 
-.nav-bar a {
-  text-decoration: none;
-  color: inherit;
-  font-weight: bold;
-  margin-right: 1rem;
+nav {
+  padding: 30px;
 }
 
-.nav-bar a:hover {
-  color: #ddd;
+nav a {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+nav a.router-link-exact-active {
+  color: #42b983;
+}
+
+header {
+  line-height: 1.5;
+  max-height: 100vh;
+}
+
+.logo {
+  display: block;
+  margin: 0 auto 2rem;
+}
+
+h4 {
+  font-size: 20px;
 }
 </style>
