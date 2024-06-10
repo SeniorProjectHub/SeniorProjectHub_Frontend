@@ -1,10 +1,10 @@
 <template>
   <div>
     <h1>Information List</h1>
-    <ul>
+    <ul v-if="!error">
       <li v-for="info in informations" :key="info.id">
         <i class="fas fa-file-pdf"></i>
-        <span>{{ info.name }}</span>
+        <span>{{ info.title }}</span>
         <button @click="viewInformation(info.id)">View</button>
       </li>
     </ul>
@@ -23,7 +23,10 @@ const router = useRouter()
 const fetchInformations = async () => {
   try {
     const response = await fetch('/api/informations')
-    if (!response.ok) throw new Error(await response.text())
+    if (!response.ok) {
+      const errorMessage = await response.text()
+      throw new Error(`HTTP ${response.status} - ${response.statusText}: ${errorMessage}`)
+    }
     informations.value = await response.json()
   } catch (err) {
     error.value = err.message
@@ -40,5 +43,6 @@ onMounted(fetchInformations)
 <style>
 .error {
   color: red;
+  font-weight: bold;
 }
 </style>

@@ -3,10 +3,17 @@
     <h1>Information Details</h1>
     <div v-if="information">
       <i class="fas fa-file-pdf fa-5x"></i>
-      <p>{{ information.name }}</p>
-      <p>{{ information.details }}</p>
-      <button @click="editInformation">Edit</button>
-      <button @click="deleteInformation">Delete</button>
+      <h2>{{ information.title }}</h2>
+      <p><strong>Advisor:</strong> {{ information.advisor }}</p>
+      <p><strong>Authors:</strong> {{ information.authors.join(', ') }}</p>
+      <p><strong>Subject Tags:</strong> {{ information.subject_tags.join(', ') }}</p>
+      <p><strong>Summary:</strong></p>
+      <p>{{ information.summary }}</p>
+      <p><strong>Timestamp:</strong> {{ new Date(information.timestamp).toLocaleString() }}</p>
+      <div class="button-container">
+        <button @click="editInformation">Edit</button>
+        <button @click="confirmDeleteInformation">Delete</button>
+      </div>
     </div>
     <div v-if="error" class="error">{{ error }}</div>
   </div>
@@ -35,6 +42,12 @@ const editInformation = () => {
   router.push(`/information/${route.params.id}/edit`)
 }
 
+const confirmDeleteInformation = () => {
+  if (confirm('Are you sure you want to delete this?')) {
+    deleteInformation()
+  }
+}
+
 const deleteInformation = async () => {
   try {
     const response = await fetch(`/api/information/${route.params.id}`, { method: 'DELETE' })
@@ -51,5 +64,14 @@ onMounted(fetchInformation)
 <style>
 .error {
   color: red;
+}
+.button-container {
+  margin-top: 20px;
+}
+.button-container button {
+  margin-right: 10px;
+}
+p {
+  margin: 10px 0;
 }
 </style>

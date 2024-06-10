@@ -5,12 +5,11 @@ import { RouterLink, RouterView } from 'vue-router'
 <template>
   <header>
     <div class="navbar">
-    <nav>
-      <RouterLink to="/">SeniorProjectHub</RouterLink>
-      <RouterLink to="/upload">Upload</RouterLink>
-      <RouterLink to="/list-view">Document List</RouterLink>
-  </nav>
-  </div>
+      <nav>
+        <RouterLink to="/">SeniorProjectHub</RouterLink>
+        <RouterLink to="/list-view">Document List</RouterLink>
+      </nav>
+    </div>
   </header>
   <div class="container">
     <RouterView />
@@ -18,7 +17,6 @@ import { RouterLink, RouterView } from 'vue-router'
 </template>
 
 <style scoped>
-
 .nav-bar {
   position: fixed;
   top: 0;
