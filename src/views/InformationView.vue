@@ -61,27 +61,27 @@ const deleteInformation = async () => {
 
 const downloadPDF = () => {
   if (!information.value || !information.value.title) {
-    error.value = 'Information or title is not available';
-    return;
+    error.value = 'Information or title is not available'
+    return
   }
-  
-  const filename = `${information.value.title}.pdf`;  // Use the title as the filename
-  const url = `/download/${encodeURIComponent(filename)}`;
+
+  const filename = `${information.value.hash_key}.pdf` // Use the title as the filename
+  const url = `/download/${encodeURIComponent(filename)}`
   console.log(url)
 
   // Create a temporary link element
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+
   // Append the link to the body
-  document.body.appendChild(link);
-  
+  document.body.appendChild(link)
+
   // Programmatically click the link to trigger the download
-  link.click();
-  
+  link.click()
+
   // Remove the link from the document
-  document.body.removeChild(link);
+  document.body.removeChild(link)
 }
 
 onMounted(fetchInformation)

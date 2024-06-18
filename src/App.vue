@@ -8,6 +8,7 @@ import { RouterLink, RouterView } from 'vue-router'
       <nav>
         <RouterLink to="/">SeniorProjectHub</RouterLink>
         <RouterLink to="/list-view">Document List</RouterLink>
+        <RouterLink to="/upload">Upload Document</RouterLink>
       </nav>
     </div>
   </header>

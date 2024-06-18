@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import ListView from '../views/ListView.vue'
 import InformationView from '../views/InformationView.vue'
 import InformationEditView from '../views/InformationEditView.vue'
+import UploadView from '../views/UploadView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,6 +27,11 @@ const router = createRouter({
       path: '/information/:id/edit',
       name: 'information-edit',
       component: InformationEditView
+    },
+    {
+      path: '/upload',
+      name: 'upload-document',
+      component: UploadView
     }
   ]
 })
