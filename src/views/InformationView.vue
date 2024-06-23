@@ -59,29 +59,28 @@ const deleteInformation = async () => {
   }
 }
 
-const downloadPDF = () => {
-  if (!information.value || !information.value.title) {
-    error.value = 'Information or title is not available'
-    return
+const downloadPDF = async () => {
+  try {
+    const response = await fetch(`/download/${route.params.id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/pdf'
+      }
+    })
+    if (!response.ok) throw new Error(await response.text())
+
+    // const blob = await response.blob()
+    // const url = window.URL.createObjectURL(blob)
+    // const link = document.createElement('a')
+    // link.href = url
+    // link.setAttribute('download', `${information.value.title}.pdf`)
+    // document.body.appendChild(link)
+    // link.click()
+    // document.body.removeChild(link)
+    // window.URL.revokeObjectURL(url)
+  } catch (err) {
+    error.value = err.message
   }
-
-  const filename = `${information.value.hash_key}.pdf` // Use the title as the filename
-  const url = `/download/${encodeURIComponent(filename)}`
-  console.log(url)
-
-  // Create a temporary link element
-  const link = document.createElement('a')
-  link.href = url
-  link.download = filename
-
-  // Append the link to the body
-  document.body.appendChild(link)
-
-  // Programmatically click the link to trigger the download
-  link.click()
-
-  // Remove the link from the document
-  document.body.removeChild(link)
 }
 
 onMounted(fetchInformation)
