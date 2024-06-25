@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Information List</h1>
+    <h1>Document List</h1>
     <ul v-if="!error">
       <li v-for="info in informations" :key="info.id">
         <i class="fas fa-file-pdf"></i>

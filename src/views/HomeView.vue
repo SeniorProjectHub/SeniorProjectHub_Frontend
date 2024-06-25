@@ -24,14 +24,14 @@ body {
   justify-content: center;
   align-items: center;
   height: calc(100vh - 60px); /* Subtract header height */
-  background: linear-gradient(
+  /* background: linear-gradient(
     73.26deg,
     #070537 0.87%,
     #615882 33.62%,
     #c33538 86.86%,
     #dc8e00 113.01%,
     #a8eb12 129.03%
-  );
+  ); */
   color: white;
   text-align: center;
 }
@@ -52,7 +52,7 @@ body {
 
 .welcome-message h1, .welcome-message h2 {
   font-family: 'Inter';
-  color: #ffffff; /* Inside auto layout */
+  color: black; /* Inside auto layout */
 }
 
 .welcome-message h1 {
