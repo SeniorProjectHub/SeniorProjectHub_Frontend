@@ -1,28 +1,36 @@
 <template>
-  <div>
+  <div class="information-details">
     <h1>Edit Information</h1>
     <form @submit.prevent="updateInformation">
-      <div>
+      <div class="form-group">
         <label for="title">Title</label>
         <input v-model="information.title" type="text" id="title" required />
       </div>
-      <div>
+      <div class="form-group">
         <label for="advisor">Advisor</label>
         <input v-model="information.advisor" type="text" id="advisor" required />
       </div>
-      <div>
+      <div class="form-group">
         <label for="authors">Authors</label>
         <input v-model="information.authors" type="text" id="authors" required />
       </div>
-      <div>
+      <div class="form-group">
         <label for="subject_tags">Subject Tags</label>
         <input v-model="information.subject_tags" type="text" id="subject_tags" required />
       </div>
-      <div>
+      <div class="form-group">
         <label for="summary">Summary</label>
         <textarea v-model="information.summary" id="summary" required></textarea>
       </div>
-      <button type="submit">Save</button>
+      <div class="form-group">
+        <label for="category">Category</label>
+        <select v-model="information.category" id="category" required>
+          <option value="EV">EV</option>
+          <option value="AI">AI</option>
+          <option value="Robotics">Robotics</option>
+        </select>
+      </div>
+      <button type="submit" class="save-button">Save</button>
       <div v-if="success" class="success">{{ success }}</div>
       <div v-if="error" class="error">{{ error }}</div>
     </form>
@@ -38,9 +46,10 @@ const router = useRouter()
 const information = ref({
   title: '',
   advisor: '',
-  authors: [],
-  subject_tags: [],
-  summary: ''
+  authors: '',
+  subject_tags: '',
+  summary: '',
+  category: ''
 })
 const error = ref(null)
 const success = ref(null)
@@ -55,7 +64,8 @@ const fetchInformation = async () => {
       advisor: data.advisor,
       authors: data.authors.join(', '),
       subject_tags: data.subject_tags.join(', '),
-      summary: data.summary
+      summary: data.summary,
+      category: data.category
     }
   } catch (err) {
     error.value = err.message
@@ -69,7 +79,8 @@ const updateInformation = async () => {
       advisor: information.value.advisor,
       authors: information.value.authors.split(',').map((author) => author.trim()),
       subject_tags: information.value.subject_tags.split(',').map((tag) => tag.trim()),
-      summary: information.value.summary
+      summary: information.value.summary,
+      category: information.value.category
     }
     const response = await fetch(`/api/information/${route.params.id}`, {
       method: 'PUT',
@@ -91,16 +102,78 @@ const updateInformation = async () => {
 onMounted(fetchInformation)
 </script>
 
-<style>
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+.information-details {
+  font-family: 'Inter', sans-serif;
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.save-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  color: white;
+  background-color: #4B0082;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.save-button:hover {
+  background-color: #3a0066;
+}
+
 .success {
   color: green;
   margin-top: 10px;
 }
+
 .error {
   color: red;
   margin-top: 10px;
-}
-form div {
-  margin-bottom: 10px;
 }
 </style>

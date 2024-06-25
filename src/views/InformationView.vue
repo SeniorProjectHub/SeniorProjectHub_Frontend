@@ -1,20 +1,20 @@
 <template>
-  <div>
-    <h1>Information Details</h1>
+  <div class="information-details">
+    <div class="button-container">
+      <button class="download-button" @click="downloadPDF">Download this file</button>
+      <button class="edit-button" @click="editInformation">Edit Detail</button>
+      <button class="delete-button" @click="confirmDeleteInformation">Delete Document</button>
+    </div>
     <div v-if="information">
-      <i class="fas fa-file-pdf fa-5x"></i>
       <h2>{{ information.title }}</h2>
-      <p><strong>Advisor:</strong> {{ information.advisor }}</p>
-      <p><strong>Authors:</strong> {{ information.authors.join(', ') }}</p>
-      <p><strong>Subject Tags:</strong> {{ information.subject_tags.join(', ') }}</p>
-      <p><strong>Summary:</strong></p>
-      <p>{{ information.summary }}</p>
-      <p><strong>Timestamp:</strong> {{ new Date(information.timestamp).toLocaleString() }}</p>
-      <div class="button-container">
-        <button @click="editInformation">Edit</button>
-        <button @click="confirmDeleteInformation">Delete</button>
-        <button @click="downloadPDF">Download PDF</button>
+      <p>{{ information.authors.join(', ') }}</p>
+      <p>{{ information.advisor }}</p>
+      <p>Subject tag: {{ information.subject_tags.join(', ') }}</p>
+      <div class="summary">
+        <strong>Brief summary</strong>
+        <p>{{ information.summary }}</p>
       </div>
+      <p><strong>Timestamp:</strong> {{ new Date(information.timestamp).toLocaleString() }}</p>
     </div>
     <div v-if="error" class="error">{{ error }}</div>
   </div>
@@ -69,6 +69,7 @@ const downloadPDF = async () => {
     })
     if (!response.ok) throw new Error(await response.text())
 
+    // Simulated PDF download logic
     // const blob = await response.blob()
     // const url = window.URL.createObjectURL(blob)
     // const link = document.createElement('a')
@@ -86,17 +87,90 @@ const downloadPDF = async () => {
 onMounted(fetchInformation)
 </script>
 
-<style>
-.error {
-  color: red;
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
 }
-.button-container {
+
+.information-details {
+  font-family: 'Inter', sans-serif;
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+h2 {
   margin-top: 20px;
+  font-size: 1.5rem;
+  font-weight: bold;
 }
-.button-container button {
-  margin-right: 10px;
-}
+
 p {
   margin: 10px 0;
+  font-size: 1rem;
+}
+
+.summary {
+  text-align: left;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 20px 0;
+  background-color: #f3f3f3;
+}
+
+.summary strong {
+  font-size: 1.1rem;
+}
+
+.error {
+  color: red;
+  text-align: center;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.download-button {
+  background-color: #4B0082;
+  color: white;
+}
+
+.edit-button {
+  background-color: #fb8c00;
+  color: white;
+}
+
+.delete-button {
+  background-color: #e53935;
+  color: white;
+}
+
+.button-container button {
+  padding: 10px 15px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.button-container button:hover {
+  opacity: 0.9;
 }
 </style>
