@@ -1,47 +1,52 @@
 <template>
-  <div class="upload-container">
-    <h1>File Upload</h1>
-    <input type="file" multiple @change="handleFileChange" class="file-input" />
-    <button @click="handleUpload" class="upload-button" :disabled="isLoading">Upload</button>
-    <p v-if="uploadStatus" class="status-message">{{ uploadStatus }}</p>
-    <div v-if="isLoading" class="loader"></div>
-    <div v-if="uploadedData && uploadedData.length > 0">
-      <h2>Uploaded Data</h2>
-      <div v-for="(data, index) in uploadedData" :key="index" class="uploaded-item">
-        <h3 @click="toggleDropdown(index)">
-          File: {{ data.filename }} 
-          <span :class="{'dropdown-icon': true, 'open': isDropdownOpen[index]}">&#9660;</span>
-        </h3>
-        <div v-show="isDropdownOpen[index]" class="form-section">
-          <div v-if="data.status === 'uploaded'">
-            <label class="form-label">
-              Title:
-              <input type="text" v-model="data.data.title" class="form-input" />
-            </label>
-            <label class="form-label">
-              Authors:
-              <input type="text" v-model="data.data.authors" class="form-input" />
-            </label>
-            <label class="form-label">
-              Advisor:
-              <input type="text" v-model="data.data.advisor" class="form-input" />
-            </label>
-            <label class="form-label">
-              Subject Tags:
-              <input type="text" v-model="data.data.subject_tags" class="form-input" />
-            </label>
-            <label class="form-label">
-              Summary:
-              <textarea v-model="data.data.summary" class="form-textarea"></textarea>
-            </label>
-          </div>
-          <div v-else-if="data.status === 'exists'" class="exists-message">
-            <p>This file already exists in the database.</p>
+  <div class="upload-wrapper">
+    <div class="upload-container">
+      <h2>Upload Senior Project PDF Files</h2>
+      <input type="file" multiple @change="handleFileChange" class="file-input" />
+      <button @click="triggerFileInput" class="select-button">Select PDF files</button>
+      <p>or drop PDFs here</p>
+      <p>maximum 200MB per file</p>
+      <button @click="handleUpload" class="upload-button" :disabled="isLoading">Upload</button>
+      <div v-if="uploadStatus" class="status-message">{{ uploadStatus }}</div>
+      <div v-if="isLoading" class="loader"></div>
+      <div v-if="uploadedData && uploadedData.length > 0">
+        <h2>Uploaded Data</h2>
+        <div v-for="(data, index) in uploadedData" :key="index" class="uploaded-item">
+          <h3 @click="toggleDropdown(index)">
+            File: {{ data.filename }} 
+            <span :class="{'dropdown-icon': true, 'open': isDropdownOpen[index]}">&#9660;</span>
+          </h3>
+          <div v-show="isDropdownOpen[index]" class="form-section">
+            <div v-if="data.status === 'uploaded'">
+              <label class="form-label">
+                Title:
+                <input type="text" v-model="data.data.title" class="form-input" />
+              </label>
+              <label class="form-label">
+                Authors:
+                <input type="text" v-model="data.data.authors" class="form-input" />
+              </label>
+              <label class="form-label">
+                Advisor:
+                <input type="text" v-model="data.data.advisor" class="form-input" />
+              </label>
+              <label class="form-label">
+                Subject Tags:
+                <input type="text" v-model="data.data.subject_tags" class="form-input" />
+              </label>
+              <label class="form-label">
+                Summary:
+                <textarea v-model="data.data.summary" class="form-textarea"></textarea>
+              </label>
+            </div>
+            <div v-else-if="data.status === 'exists'" class="exists-message">
+              <p>This file already exists in the database.</p>
+            </div>
           </div>
         </div>
+        <button @click="handleSaveAll" class="save-button" :disabled="isLoading">Save All</button>
+        <div v-if="isLoading" class="loader"></div>
       </div>
-      <button @click="handleSaveAll" class="save-button" :disabled="isLoading">Save All</button>
-      <div v-if="isLoading" class="loader"></div>
     </div>
   </div>
 </template>
@@ -59,6 +64,11 @@ export default defineComponent({
     const isLoading = ref<boolean>(false);
     const isDropdownOpen = ref<boolean[]>([]);
     const router = useRouter();
+
+    const triggerFileInput = () => {
+      const fileInput = document.querySelector('.file-input') as HTMLInputElement;
+      fileInput.click();
+    };
 
     const handleFileChange = (event: Event) => {
       const target = event.target as HTMLInputElement;
@@ -143,132 +153,80 @@ export default defineComponent({
       handleUpload,
       handleSaveAll,
       toggleDropdown,
+      triggerFileInput,
     };
   },
 });
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+.upload-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f0f0;
+}
+
 .upload-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
+  max-width: 600px;
+  font-family: 'Inter', sans-serif;
 
-h1, h2 {
-  text-align: center;
-  color: #333;
-}
-
-.file-input {
-  display: block;
-  margin: 20px auto;
-  padding: 10px;
-  font-size: 16px;
-}
-
-.upload-button {
-  display: block;
   width: 100%;
-  max-width: 200px;
-  margin: 20px auto;
-  padding: 10px;
-  font-size: 16px;
-  background-color: #007BFF;
-  color: white;
+  padding: 40px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  text-align: center;
+}
+
+h2 {
+  color: #333333;
+  margin-bottom: 20px;
+}
+
+.select-button,
+.upload-button {
+  background-color: #d9534f;
+  color: #ffffff;
   border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s;
+  margin: 10px 0;
 }
 
+.select-button:hover,
+.upload-button:hover {
+  background-color: #c9302c;
+}
+
+.select-button:disabled,
 .upload-button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
 
-.upload-button:hover:not(:disabled) {
-  background-color: #0056b3;
+.file-input {
+  display: none;
 }
 
 .status-message {
-  text-align: center;
   color: #d9534f;
+  margin-top: 20px;
 }
 
-.uploaded-item {
-  margin-bottom: 20px;
-  padding: 10px;
-  background-color: #fff;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-h3 {
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.form-section {
-  margin-bottom: 20px;
-}
-
-.form-label {
-  display: block;
-  margin-bottom: 10px;
-  color: #333;
-  font-weight: bold;
-}
-
-.form-input, .form-textarea {
-  width: 100%;
-  padding: 8px;
-  margin-top: 4px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-.form-input:focus, .form-textarea:focus {
-  outline: none;
-  border-color: #007BFF;
-}
-
-.form-textarea {
-  height: 100px;
-}
-
-.exists-message {
-  color: #d9534f;
-}
-
-.save-button {
-  display: block;
-  width: 100%;
-  max-width: 200px;
-  margin: 20px auto;
-  padding: 10px;
-  font-size: 16px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.save-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.save-button:hover:not(:disabled) {
-  background-color: #218838;
+p {
+  margin: 10px 0;
+  color: #666666;
 }
 
 .loader {
