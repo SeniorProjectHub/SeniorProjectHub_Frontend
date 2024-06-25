@@ -1,12 +1,25 @@
 <template>
   <div class="upload-wrapper">
-    <div class="upload-container">
+    <div 
+      class="upload-container" 
+      @dragover.prevent 
+      @dragenter.prevent 
+      @drop="handleDrop"
+      @dragover="highlight"
+      @dragleave="unhighlight"
+      @dragenter="highlight"
+    >
       <h2>Upload Senior Project PDF Files</h2>
       <input type="file" multiple @change="handleFileChange" class="file-input" />
       <button @click="triggerFileInput" class="select-button">Select PDF files</button>
-      <p>or drop PDFs here</p>
-      <p>maximum 200MB per file</p>
-      <button @click="handleUpload" class="upload-button" :disabled="isLoading">Upload</button>
+      <p>or drop PDF files here</p>
+      <div v-if="selectedFiles && selectedFiles.length > 0" class="file-list">
+        <h3>Selected Files:</h3>
+        <ul>
+          <li v-for="(file, index) in selectedFiles" :key="index">{{ file.name }}</li>
+        </ul>
+      </div>
+      <button @click="handleUpload" class="upload-button" :disabled="isLoading || !selectedFiles || selectedFiles.length === 0">Upload</button>
       <div v-if="uploadStatus" class="status-message">{{ uploadStatus }}</div>
       <div v-if="isLoading" class="loader"></div>
       <div v-if="uploadedData && uploadedData.length > 0">
@@ -73,6 +86,13 @@ export default defineComponent({
     const handleFileChange = (event: Event) => {
       const target = event.target as HTMLInputElement;
       selectedFiles.value = target.files;
+    };
+
+    const handleDrop = (event: DragEvent) => {
+      const files = event.dataTransfer?.files;
+      if (files) {
+        selectedFiles.value = files;
+      }
     };
 
     const handleUpload = async () => {
@@ -143,6 +163,16 @@ export default defineComponent({
       isDropdownOpen.value[index] = !isDropdownOpen.value[index];
     };
 
+    const highlight = (event: Event) => {
+      const uploadContainer = event.currentTarget as HTMLElement;
+      uploadContainer.classList.add('highlight');
+    };
+
+    const unhighlight = (event: Event) => {
+      const uploadContainer = event.currentTarget as HTMLElement;
+      uploadContainer.classList.remove('highlight');
+    };
+
     return {
       selectedFiles,
       uploadStatus,
@@ -150,10 +180,13 @@ export default defineComponent({
       isLoading,
       isDropdownOpen,
       handleFileChange,
+      handleDrop,
       handleUpload,
       handleSaveAll,
       toggleDropdown,
       triggerFileInput,
+      highlight,
+      unhighlight,
     };
   },
 });
@@ -177,17 +210,48 @@ body {
 .upload-container {
   max-width: 600px;
   font-family: 'Inter', sans-serif;
-
   width: 100%;
   padding: 40px;
   background-color: #ffffff;
   border-radius: 8px;
   text-align: center;
+  border: 2px dashed transparent;
+  transition: border-color 0.3s;
+}
+
+.upload-container.highlight {
+  border-color: #007BFF;
 }
 
 h2 {
   color: #333333;
   margin-bottom: 20px;
+}
+
+.file-list {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.file-list h3 {
+  margin: 0;
+  margin-bottom: 10px;
+  font-size: 18px;
+  color: #333;
+}
+
+.file-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.file-list li {
+  background: #f8f8f8;
+  border: 1px solid #ddd;
+  padding: 5px 10px;
+  margin-bottom: 5px;
+  border-radius: 4px;
+  font-size: 14px;
 }
 
 .select-button,
