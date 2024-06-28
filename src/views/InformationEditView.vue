@@ -22,14 +22,6 @@
         <label for="summary">Summary</label>
         <textarea v-model="information.summary" id="summary" required></textarea>
       </div>
-      <div class="form-group">
-        <label for="category">Category</label>
-        <select v-model="information.category" id="category" required>
-          <option value="EV">EV</option>
-          <option value="AI">AI</option>
-          <option value="Robotics">Robotics</option>
-        </select>
-      </div>
       <button type="submit" class="save-button">Save</button>
       <div v-if="success" class="success">{{ success }}</div>
       <div v-if="error" class="error">{{ error }}</div>

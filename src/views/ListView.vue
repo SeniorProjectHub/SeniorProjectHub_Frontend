@@ -3,9 +3,8 @@
     <h1>Document List</h1>
     <div class="document-grid">
       <div v-for="info in informations" :key="info.id" class="document-item">
-        <i class="fas fa-file-pdf"></i>
-        <span>{{ info.title }}</span>
-        <button @click="viewInformation(info.id)">View</button>
+        <img src="@/assets/pdf.svg" alt="PDF Logo" class="pdf-logo" />
+        <router-link :to="`/information/${info.id}`" class="document-title">{{ info.title }}</router-link>
       </div>
     </div>
     <div v-if="error" class="error">{{ error }}</div>
@@ -31,10 +30,6 @@ const fetchInformations = async () => {
   } catch (err) {
     error.value = err.message
   }
-}
-
-const viewInformation = (id) => {
-  router.push(`/information/${id}`)
 }
 
 onMounted(fetchInformations)
@@ -72,35 +67,30 @@ h1 {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+  justify-content: center;
+  padding: 20px;
   text-align: center;
+  height: 150px;
 }
 
-.document-item i {
-  font-size: 2rem;
-  color: #d9534f;
+.document-item .pdf-logo {
+  width: 50px; /* Adjust size as needed */
+  height: auto;
   margin-bottom: 10px;
 }
 
-.document-item span {
+.document-item .document-title {
   font-size: 1.2rem;
-  margin-bottom: 10px;
+  color: #42b983;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
-.document-item button {
-  padding: 5px 10px;
-  font-size: 1rem;
-  background-color: #42b983;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.document-item button:hover {
-  background-color: #358a60;
+.document-item .document-title:hover {
+  text-decoration: underline;
 }
 
 .error {
