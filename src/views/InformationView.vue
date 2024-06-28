@@ -3,7 +3,7 @@
     <div class="button-container">
       <button class="download-button" @click="downloadPDF">Download this file</button>
       <button class="edit-button" @click="editInformation">Edit Detail</button>
-      <button class="delete-button" @click="confirmDeleteInformation">Delete Document</button>
+      <button class="delete-button" @click="showDeleteModal = true">Delete Document</button>
     </div>
     <div v-if="information">
       <h2>{{ information.title }}</h2>
@@ -17,17 +17,24 @@
       <p><strong>Timestamp:</strong> {{ new Date(information.timestamp).toLocaleString() }}</p>
     </div>
     <div v-if="error" class="error">{{ error }}</div>
+    <DeleteConfirmationModal
+      :show="showDeleteModal"
+      @delete="deleteInformation"
+      @cancel="showDeleteModal = false"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import DeleteConfirmationModal from './DeleteConfirmationModal.vue'
 
 const route = useRoute()
 const router = useRouter()
 const information = ref(null)
 const error = ref(null)
+const showDeleteModal = ref(false)
 
 const fetchInformation = async () => {
   try {
@@ -43,42 +50,32 @@ const editInformation = () => {
   router.push(`/information/${route.params.id}/edit`)
 }
 
-const confirmDeleteInformation = () => {
-  if (confirm('Are you sure you want to delete this?')) {
-    deleteInformation()
-  }
-}
-
 const deleteInformation = async () => {
   try {
     const response = await fetch(`/api/information/${route.params.id}`, { method: 'DELETE' })
     if (!response.ok) throw new Error(await response.text())
-    router.push('/')
+    router.push('/list') // Redirect to the list view after deletion
   } catch (err) {
     error.value = err.message
   }
+  showDeleteModal.value = false
 }
 
 const downloadPDF = async () => {
   try {
-    const response = await fetch(`/download/${route.params.id}`, {
+    const response = await fetch(`/api/download/${route.params.id}`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/pdf'
-      }
     })
     if (!response.ok) throw new Error(await response.text())
-
-    // Simulated PDF download logic
-    // const blob = await response.blob()
-    // const url = window.URL.createObjectURL(blob)
-    // const link = document.createElement('a')
-    // link.href = url
-    // link.setAttribute('download', `${information.value.title}.pdf`)
-    // document.body.appendChild(link)
-    // link.click()
-    // document.body.removeChild(link)
-    // window.URL.revokeObjectURL(url)
+    const blob = await response.blob()
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', `${information.value.title}.pdf`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
   } catch (err) {
     error.value = err.message
   }
@@ -147,30 +144,37 @@ p {
   margin-bottom: 20px;
 }
 
-.download-button {
-  background-color: #4B0082;
-  color: white;
-}
-
-.edit-button {
-  background-color: #fb8c00;
-  color: white;
-}
-
-.delete-button {
-  background-color: #e53935;
-  color: white;
-}
-
 .button-container button {
   padding: 10px 15px;
   font-size: 1rem;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  color: white;
+  transition: background-color 0.3s ease;
 }
 
-.button-container button:hover {
-  opacity: 0.9;
+.download-button {
+  background-color: #4B0082;
+}
+
+.edit-button {
+  background-color: #fb8c00;
+}
+
+.delete-button {
+  background-color: #e53935;
+}
+
+.download-button:hover {
+  background-color: #3a0066;
+}
+
+.edit-button:hover {
+  background-color: #e67e22;
+}
+
+.delete-button:hover {
+  background-color: #c62828;
 }
 </style>
