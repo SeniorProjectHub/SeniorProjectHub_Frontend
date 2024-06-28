@@ -103,19 +103,19 @@ body {
 
 .information-details {
   font-family: 'Inter', sans-serif;
-  max-width: 800px;
+  max-width: 600px;
   margin: 50px auto;
   padding: 20px;
-  border: 1px solid #ddd;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  background-color: #f9f9f9;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  text-align: center;
 }
 
 h1 {
   text-align: center;
   margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #4B0082;
 }
 
 .form-group {
@@ -127,19 +127,22 @@ h1 {
   display: block;
   font-weight: bold;
   margin-bottom: 5px;
+  color: #333333;
 }
 
 .form-group input,
-.form-group textarea,
-.form-group select {
+.form-group textarea {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  font-size: 1rem;
+  margin-top: 5px;
 }
 
 .form-group textarea {
   resize: vertical;
+  min-height: 100px;
 }
 
 .save-button {
@@ -153,19 +156,24 @@ h1 {
   border-radius: 4px;
   cursor: pointer;
   margin-top: 20px;
+  transition: background-color 0.3s ease;
 }
 
 .save-button:hover {
   background-color: #3a0066;
 }
 
+.success, .error {
+  margin-top: 15px;
+  font-size: 1rem;
+  text-align: center;
+}
+
 .success {
   color: green;
-  margin-top: 10px;
 }
 
 .error {
   color: red;
-  margin-top: 10px;
 }
 </style>
