@@ -61,7 +61,7 @@ const deleteInformation = async () => {
 
 const downloadPDF = async () => {
   try {
-    const response = await fetch(`/download/${route.params.id}`, {
+    const response = await fetch(`/api/download/${route.params.id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/pdf'
@@ -70,15 +70,15 @@ const downloadPDF = async () => {
     if (!response.ok) throw new Error(await response.text())
 
     // Simulated PDF download logic
-    // const blob = await response.blob()
-    // const url = window.URL.createObjectURL(blob)
-    // const link = document.createElement('a')
-    // link.href = url
-    // link.setAttribute('download', `${information.value.title}.pdf`)
-    // document.body.appendChild(link)
-    // link.click()
-    // document.body.removeChild(link)
-    // window.URL.revokeObjectURL(url)
+    const blob = await response.blob()
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', `${information.value.title}.pdf`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
   } catch (err) {
     error.value = err.message
   }

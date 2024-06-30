@@ -23,42 +23,7 @@
       <div v-if="uploadStatus" class="status-message">{{ uploadStatus }}</div>
       <div v-if="isLoading" class="loader"></div>
       <div v-if="uploadedData && uploadedData.length > 0">
-        <h2>Uploaded Data</h2>
-        <div v-for="(data, index) in uploadedData" :key="index" class="uploaded-item">
-          <h3 @click="toggleDropdown(index)">
-            File: {{ data.filename }} 
-            <span :class="{'dropdown-icon': true, 'open': isDropdownOpen[index]}">&#9660;</span>
-          </h3>
-          <div v-show="isDropdownOpen[index]" class="form-section">
-            <div v-if="data.status === 'uploaded'">
-              <label class="form-label">
-                Title:
-                <input type="text" v-model="data.data.title" class="form-input" />
-              </label>
-              <label class="form-label">
-                Authors:
-                <input type="text" v-model="data.data.authors" class="form-input" />
-              </label>
-              <label class="form-label">
-                Advisor:
-                <input type="text" v-model="data.data.advisor" class="form-input" />
-              </label>
-              <label class="form-label">
-                Subject Tags:
-                <input type="text" v-model="data.data.subject_tags" class="form-input" />
-              </label>
-              <label class="form-label">
-                Summary:
-                <textarea v-model="data.data.summary" class="form-textarea"></textarea>
-              </label>
-            </div>
-            <div v-else-if="data.status === 'exists'" class="exists-message">
-              <p>This file already exists in the database.</p>
-            </div>
-          </div>
-        </div>
-        <button @click="handleSaveAll" class="save-button" :disabled="isLoading">Save All</button>
-        <div v-if="isLoading" class="loader"></div>
+        <button @click="goToExtractedView" class="view-button">View Uploaded Data</button>
       </div>
     </div>
   </div>
@@ -67,6 +32,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 
 export default defineComponent({
   name: 'UploadView',
@@ -75,8 +41,8 @@ export default defineComponent({
     const uploadStatus = ref<string>('');
     const uploadedData = ref<object[]>([]);
     const isLoading = ref<boolean>(false);
-    const isDropdownOpen = ref<boolean[]>([]);
     const router = useRouter();
+    const store = useStore();
 
     const triggerFileInput = () => {
       const fileInput = document.querySelector('.file-input') as HTMLInputElement;
@@ -117,50 +83,24 @@ export default defineComponent({
         try {
           const result = JSON.parse(text);
           if (response.ok) {
-            uploadStatus.value = 'Upload completed';
+            uploadStatus.value = 'Extracted completed';
             uploadedData.value = result;
-            isDropdownOpen.value = new Array(result.length).fill(false); // Initialize dropdown state
+            store.dispatch('updateUploadedData', result); // Save to Vuex store
           } else {
-            uploadStatus.value = `Upload failed: ${result.error}`;
+            uploadStatus.value = `Extracted failed: ${result.error}`;
           }
         } catch (e) {
-          uploadStatus.value = `Upload failed: Invalid JSON response - ${text}`;
+          uploadStatus.value = `Extracted failed: Invalid JSON response - ${text}`;
         }
       } catch (error) {
-        uploadStatus.value = `Upload error: ${error}`;
+        uploadStatus.value = `Extracted error: ${error}`;
       } finally {
         isLoading.value = false;
       }
     };
 
-    const handleSaveAll = async () => {
-      isLoading.value = true;
-      try {
-        const response = await fetch('http://localhost:5000/save', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(uploadedData.value),
-        });
-
-        if (response.ok) {
-          const result = await response.json();
-          console.log('Save successful:', result);
-          router.push('/list-view'); // Redirect to list-view
-        } else {
-          const error = await response.text();
-          console.error('Save failed:', error);
-        }
-      } catch (error) {
-        console.error('Save error:', error);
-      } finally {
-        isLoading.value = false;
-      }
-    };
-
-    const toggleDropdown = (index: number) => {
-      isDropdownOpen.value[index] = !isDropdownOpen.value[index];
+    const goToExtractedView = () => {
+      router.push({ name: 'extracted-data' });
     };
 
     const highlight = (event: Event) => {
@@ -178,12 +118,10 @@ export default defineComponent({
       uploadStatus,
       uploadedData,
       isLoading,
-      isDropdownOpen,
       handleFileChange,
       handleDrop,
       handleUpload,
-      handleSaveAll,
-      toggleDropdown,
+      goToExtractedView,
       triggerFileInput,
       highlight,
       unhighlight,
@@ -255,7 +193,8 @@ h2 {
 }
 
 .select-button,
-.upload-button {
+.upload-button,
+.view-button {
   background-color: #d9534f;
   color: #ffffff;
   border: none;
@@ -269,7 +208,8 @@ h2 {
 }
 
 .select-button:hover,
-.upload-button:hover {
+.upload-button:hover,
+.view-button:hover {
   background-color: #c9302c;
 }
 
@@ -306,14 +246,5 @@ p {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
-}
-
-.dropdown-icon {
-  font-size: 0.8em;
-  margin-left: 10px;
-}
-
-.dropdown-icon.open {
-  transform: rotate(180deg);
 }
 </style>
