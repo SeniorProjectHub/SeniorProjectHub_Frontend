@@ -67,6 +67,8 @@ const downloadPDF = async () => {
       method: 'GET',
     })
     if (!response.ok) throw new Error(await response.text())
+
+    // Simulated PDF download logic
     const blob = await response.blob()
     const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a')
