@@ -71,13 +71,16 @@ export default defineComponent({
 
         if (response.ok) {
           const result = await response.json();
-          console.log('Save successful:', result);
+          console.log('Upload successful:', result);
+          const titles = uploadedData.value.map(data => data.data.title).join(', ');
+          alert(`Upload successful: ${titles}`);
+          router.push({ name: 'list-view' });
         } else {
           const error = await response.text();
-          console.error('Save failed:', error);
+          console.error('Upload failed:', error);
         }
       } catch (error) {
-        console.error('Save error:', error);
+        console.error('Upload error:', error);
       } finally {
         isLoading.value = false;
       }
