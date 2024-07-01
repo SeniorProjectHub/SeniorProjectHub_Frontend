@@ -54,7 +54,7 @@ const deleteInformation = async () => {
   try {
     const response = await fetch(`/api/information/${route.params.id}`, { method: 'DELETE' })
     if (!response.ok) throw new Error(await response.text())
-    router.push('/list') // Redirect to the list view after deletion
+    router.push('/list-view') // Redirect to the list view after deletion
   } catch (err) {
     error.value = err.message
   }

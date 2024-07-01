@@ -37,8 +37,16 @@
     <button @click="handleSaveAll" class="save-button" :disabled="isLoading">Save All</button>
     <button @click="cancelAction" class="cancel-button">Cancel</button>
     <div v-if="isLoading" class="loader"></div>
+
+    <div v-if="showNotification" class="modal-overlay">
+      <div class="modal-content">
+        <p>Upload successful: {{ uploadedTitles }}</p>
+        <button @click="confirmNotification" class="confirm-button">OK</button>
+      </div>
+    </div>
   </div>
 </template>
+
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
@@ -53,6 +61,8 @@ export default defineComponent({
     const uploadedData = ref(store.getters.getUploadedData);
     const isDropdownOpen = ref<boolean[]>(new Array(uploadedData.value.length).fill(false));
     const isLoading = ref(false);
+    const showNotification = ref(false);
+    const uploadedTitles = ref('');
 
     const toggleDropdown = (index: number) => {
       isDropdownOpen.value[index] = !isDropdownOpen.value[index];
@@ -72,9 +82,8 @@ export default defineComponent({
         if (response.ok) {
           const result = await response.json();
           console.log('Upload successful:', result);
-          const titles = uploadedData.value.map(data => data.data.title).join(', ');
-          alert(`Upload successful: ${titles}`);
-          router.push({ name: 'list-view' });
+          uploadedTitles.value = uploadedData.value.map(data => data.data.title).join(', ');
+          showNotification.value = true;
         } else {
           const error = await response.text();
           console.error('Upload failed:', error);
@@ -84,6 +93,11 @@ export default defineComponent({
       } finally {
         isLoading.value = false;
       }
+    };
+
+    const confirmNotification = () => {
+      showNotification.value = false;
+      router.push({ name: 'list-view' });
     };
 
     const cancelAction = () => {
@@ -96,18 +110,22 @@ export default defineComponent({
       uploadedData,
       isDropdownOpen,
       isLoading,
+      showNotification,
+      uploadedTitles,
       toggleDropdown,
       handleSaveAll,
+      confirmNotification,
       cancelAction,
     };
   },
 });
 </script>
 
+
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
-* {
+body {
   font-family: 'Inter', sans-serif;
 }
 
@@ -225,4 +243,39 @@ h3 {
 .dropdown-icon.open {
   transform: rotate(180deg);
 }
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.confirm-button {
+  background-color: #4285f4;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.confirm-button:hover {
+  background-color: #357ae8;
+}
 </style>
+

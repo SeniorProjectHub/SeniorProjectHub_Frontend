@@ -23,11 +23,18 @@
         <textarea v-model="information.summary" id="summary" required></textarea>
       </div>
       <button type="submit" class="save-button">Save</button>
-      <div v-if="success" class="success">{{ success }}</div>
-      <div v-if="error" class="error">{{ error }}</div>
     </form>
+
+    <div v-if="showNotification" class="modal-overlay">
+      <div class="modal-content">
+        <p>{{ notificationMessage }}</p>
+        <button @click="confirmNotification" class="confirm-button">OK</button>
+      </div>
+    </div>
   </div>
 </template>
+
+
 
 <script setup>
 import { ref, onMounted } from 'vue'
@@ -43,8 +50,9 @@ const information = ref({
   summary: '',
   category: ''
 })
-const error = ref(null)
-const success = ref(null)
+const showNotification = ref(false)
+const notificationMessage = ref('')
+const isSuccess = ref(false) // Track if the notification is for success
 
 const fetchInformation = async () => {
   try {
@@ -60,7 +68,7 @@ const fetchInformation = async () => {
       category: data.category
     }
   } catch (err) {
-    error.value = err.message
+    showErrorNotification(err.message)
   }
 }
 
@@ -82,17 +90,35 @@ const updateInformation = async () => {
       body: JSON.stringify(updatedInfo)
     })
     if (!response.ok) throw new Error(await response.text())
-    success.value = 'Information updated successfully.'
-    setTimeout(() => {
-      router.push(`/information/${route.params.id}`)
-    }, 2000)
+    showSuccessNotification('Information updated successfully.')
   } catch (err) {
-    error.value = err.message
+    showErrorNotification(err.message)
+  }
+}
+
+const showSuccessNotification = (message) => {
+  notificationMessage.value = message
+  isSuccess.value = true
+  showNotification.value = true
+}
+
+const showErrorNotification = (message) => {
+  notificationMessage.value = message
+  isSuccess.value = false
+  showNotification.value = true
+}
+
+const confirmNotification = () => {
+  showNotification.value = false
+  if (isSuccess.value) {
+    router.push(`/information/${route.params.id}`)
   }
 }
 
 onMounted(fetchInformation)
 </script>
+
+
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
@@ -161,17 +187,39 @@ h1 {
   background-color: #3a0066;
 }
 
-.success, .error {
-  margin-top: 15px;
-  font-size: 1rem;
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
   text-align: center;
 }
 
-.success {
-  color: green;
+.confirm-button {
+  background-color: #4285f4;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-.error {
-  color: red;
+.confirm-button:hover {
+  background-color: #357ae8;
 }
 </style>
+
+
