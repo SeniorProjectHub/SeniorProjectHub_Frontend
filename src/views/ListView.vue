@@ -38,7 +38,7 @@ onMounted(fetchInformations)
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
-body {
+* {
   font-family: 'Inter', sans-serif;
 }
 
@@ -80,8 +80,9 @@ h1 {
 }
 
 .document-item .document-title {
-  font-size: 1.2rem;
-  color: #42b983;
+  font-weight: bold;
+  font-size: 1rem;
+  color: black;
   text-decoration: none;
   white-space: nowrap;
   overflow: hidden;

@@ -9,12 +9,12 @@
       <h2>{{ information.title }}</h2>
       <p>{{ information.authors.join(', ') }}</p>
       <p>{{ information.advisor }}</p>
-      <p>Subject tag: {{ information.subject_tags.join(', ') }}</p>
+      <p><strong>Subject tag: </strong> {{ information.subject_tags.join(', ') }}</p>
       <div class="summary">
         <strong>Brief summary</strong>
         <p>{{ information.summary }}</p>
       </div>
-      <p><strong>Timestamp:</strong> {{ new Date(information.timestamp).toLocaleString() }}</p>
+      <p><strong>Last Update:</strong> {{ new Date(information.timestamp).toLocaleString() }}</p>
     </div>
     <div v-if="error" class="error">{{ error }}</div>
     <DeleteConfirmationModal
@@ -89,7 +89,7 @@ onMounted(fetchInformation)
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
-body {
+* {
   font-family: 'Inter', sans-serif;
 }
 
@@ -98,16 +98,7 @@ body {
   max-width: 800px;
   margin: 50px auto;
   padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   text-align: center;
-}
-
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
 }
 
 h2 {
@@ -157,7 +148,7 @@ p {
 }
 
 .download-button {
-  background-color: #4B0082;
+  background-color: #6854f4;
 }
 
 .edit-button {

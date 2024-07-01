@@ -1,6 +1,6 @@
 <template>
   <div class="information-details">
-    <h1>Edit Information</h1>
+    <h1>Edit Detail</h1>
     <form @submit.prevent="updateInformation">
       <div class="form-group">
         <label for="title">Title</label>
@@ -97,7 +97,7 @@ onMounted(fetchInformation)
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
-body {
+* {
   font-family: 'Inter', sans-serif;
 }
 
@@ -107,15 +107,13 @@ body {
   margin: 50px auto;
   padding: 20px;
   background-color: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
 }
 
 h1 {
   text-align: center;
   margin-bottom: 20px;
   font-size: 1.5rem;
-  color: #4B0082;
+  color: black;
 }
 
 .form-group {
@@ -151,7 +149,7 @@ h1 {
   padding: 10px;
   font-size: 1rem;
   color: white;
-  background-color: #4B0082;
+  background-color: #6854f4;
   border: none;
   border-radius: 4px;
   cursor: pointer;
