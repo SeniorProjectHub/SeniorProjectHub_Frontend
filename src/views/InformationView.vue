@@ -94,7 +94,6 @@ onMounted(fetchInformation)
 }
 
 .information-details {
-  font-family: 'Inter', sans-serif;
   max-width: 800px;
   margin: 50px auto;
   padding: 20px;
@@ -118,7 +117,6 @@ p {
   border-radius: 5px;
   padding: 10px;
   margin: 20px 0;
-  background-color: #f3f3f3;
 }
 
 .summary strong {
