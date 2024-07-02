@@ -47,8 +47,7 @@
     <custom-modal
       v-if="isModalVisible"
       :show="isModalVisible"
-      message="Are you sure you want to cancel?"
-      @confirm="confirmCancel"
+      @yes="confirmCancel"
       @cancel="hideModal"
     ></custom-modal>
 
@@ -56,7 +55,7 @@
       v-if="showNotification"
       :show="showNotification"
       :titles="uploadedTitles"
-      :message="'Document has been uploaded'"
+      :message="'Save to database Successful'"
       @confirm="confirmNotification"
     ></custom-success-modal>
   </div>

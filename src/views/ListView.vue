@@ -4,7 +4,9 @@
     <div class="document-grid">
       <div v-for="info in informations" :key="info.id" class="document-item">
         <img src="@/assets/pdf.svg" alt="PDF Logo" class="pdf-logo" />
-        <router-link :to="`/information/${info.id}`" class="document-title">{{ info.title }}</router-link>
+        <router-link :to="`/information/${info.id}`" class="document-title">{{
+          info.title
+        }}</router-link>
       </div>
     </div>
     <div v-if="error" class="error">{{ error }}</div>

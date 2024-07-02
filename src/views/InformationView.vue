@@ -64,7 +64,7 @@ const deleteInformation = async () => {
 const downloadPDF = async () => {
   try {
     const response = await fetch(`/api/download/${route.params.id}`, {
-      method: 'GET',
+      method: 'GET'
     })
     if (!response.ok) throw new Error(await response.text())
 

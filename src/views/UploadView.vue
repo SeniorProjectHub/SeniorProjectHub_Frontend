@@ -1,9 +1,9 @@
 <template>
   <div class="upload-wrapper">
-    <div 
-      class="upload-container" 
-      @dragover.prevent 
-      @dragenter.prevent 
+    <div
+      class="upload-container"
+      @dragover.prevent
+      @dragenter.prevent
       @drop="handleDrop"
       @dragover="highlight"
       @dragleave="unhighlight"
@@ -19,125 +19,138 @@
           <li v-for="(file, index) in selectedFiles" :key="index">{{ file.name }}</li>
         </ul>
       </div>
-      <!-- :disabled="isLoading || !selectedFiles || selectedFiles.length === 0" -->
-      <button @click="handleUpload" class="upload-button" >Upload</button>
+      <button @click="handleUpload" class="upload-button">Upload</button>
       <div v-if="isLoading" class="loader"></div>
-      <div v-if="uploadedData && uploadedData.length > 0">
-        <button @click="goToExtractedView" class="view-button">View Uploaded Data</button>
-      </div>
-    </div>
 
-    <ErrorModal v-if="showModal" :show="showModal" title="Upload Error" :message="modalMessage" @close="handleModalClose" />
+      <ErrorModal
+        v-if="showModal"
+        :show="showModal"
+        title="Upload Error"
+        :message="modalMessage"
+        @close="handleModalClose"
+      />
+      <CustomSuccessModal
+        v-if="showNotification"
+        :show="showNotification"
+        message="Upload completed"
+        @confirm="confirmNotification"
+      />
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useStore } from 'vuex';
-import ErrorModal from '../components/modal/ErrorModal.vue';
+import { defineComponent, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
+import ErrorModal from '../components/modal/ErrorModal.vue'
+import CustomSuccessModal from '../components/modal/CustomSuccessModal.vue'
 
 export default defineComponent({
   name: 'UploadView',
   components: {
     ErrorModal,
+    CustomSuccessModal
   },
   setup() {
-    const selectedFiles = ref<FileList | null>(null);
-    const uploadedData = ref<object[]>([]);
-    const isLoading = ref<boolean>(false);
-    const showModal = ref<boolean>(false);
-    const modalMessage = ref<string>('');
-    const fileInput = ref<HTMLInputElement | null>(null);
-    const router = useRouter();
-    const store = useStore();
+    const selectedFiles = ref<FileList | null>(null)
+    const uploadedData = ref<object[]>([])
+    const isLoading = ref<boolean>(false)
+    const showModal = ref<boolean>(false)
+    const modalMessage = ref<string>('')
+    const showNotification = ref<boolean>(false)
+    const fileInput = ref<HTMLInputElement | null>(null)
+    const router = useRouter()
+    const store = useStore()
 
     const triggerFileInput = () => {
-      fileInput.value?.click();
-    };
+      fileInput.value?.click()
+    }
 
     const handleFileChange = (event: Event) => {
-      const target = event.target as HTMLInputElement;
-      selectedFiles.value = target.files;
-    };
+      const target = event.target as HTMLInputElement
+      selectedFiles.value = target.files
+    }
 
     const handleDrop = (event: DragEvent) => {
-      const files = event.dataTransfer?.files;
+      const files = event.dataTransfer?.files
       if (files) {
-        selectedFiles.value = files;
+        selectedFiles.value = files
       }
-    };
+    }
 
     const handleUpload = async () => {
       if (!selectedFiles.value) {
-        showModal.value = true;
-        modalMessage.value = 'No files selected.';
-        resetFileInput();
-        return;
+        showModal.value = true
+        modalMessage.value = 'No files uploaded.'
+        resetFileInput()
+        return
       }
 
-      isLoading.value = true;
-      const formData = new FormData();
+      isLoading.value = true
+      const formData = new FormData()
       for (let i = 0; i < selectedFiles.value.length; i++) {
-        formData.append('file', selectedFiles.value[i]);
+        formData.append('file', selectedFiles.value[i])
       }
 
       try {
         const response = await fetch('http://localhost:5000/upload', {
           method: 'POST',
-          body: formData,
-        });
+          body: formData
+        })
 
-        const text = await response.text();
+        const text = await response.text()
         try {
-          const result = JSON.parse(text);
+          const result = JSON.parse(text)
           if (response.ok) {
-            uploadedData.value = result;
-            store.dispatch('updateUploadedData', result); // Save to Vuex store
+            uploadedData.value = result
+            store.dispatch('updateUploadedData', result) // Save to Vuex store
+            showNotification.value = true // Show success notification
           } else {
-            showModal.value = true;
-            modalMessage.value = `Extraction failed: ${result.error}`;
-            resetFileInput();
+            showModal.value = true
+            modalMessage.value = `Extraction failed: ${result.error}`
+            resetFileInput()
           }
         } catch (e) {
-          showModal.value = true;
-          modalMessage.value = `Extraction failed: Invalid JSON response - ${text}`;
-          resetFileInput();
+          showModal.value = true
+          modalMessage.value = `Extraction failed: Invalid JSON response - ${text}`
+          resetFileInput()
         }
       } catch (error) {
-        showModal.value = true;
-        modalMessage.value = `Extraction error: ${error}`;
-        resetFileInput();
+        showModal.value = true
+        modalMessage.value = `Extraction error: ${error}`
+        resetFileInput()
       } finally {
-        isLoading.value = false;
+        isLoading.value = false
       }
-    };
+    }
 
     const resetFileInput = () => {
-      selectedFiles.value = null;
+      selectedFiles.value = null
       if (fileInput.value) {
-        fileInput.value.value = '';
+        fileInput.value.value = ''
       }
-    };
+    }
 
     const handleModalClose = () => {
-      showModal.value = false;
-      resetFileInput();
-    };
+      showModal.value = false
+      resetFileInput()
+    }
 
-    const goToExtractedView = () => {
-      router.push({ name: 'extracted-data' });
-    };
+    const confirmNotification = () => {
+      showNotification.value = false
+      router.push({ name: 'extracted-data' })
+    }
 
     const highlight = (event: Event) => {
-      const uploadContainer = event.currentTarget as HTMLElement;
-      uploadContainer.classList.add('highlight');
-    };
+      const uploadContainer = event.currentTarget as HTMLElement
+      uploadContainer.classList.add('highlight')
+    }
 
     const unhighlight = (event: Event) => {
-      const uploadContainer = event.currentTarget as HTMLElement;
-      uploadContainer.classList.remove('highlight');
-    };
+      const uploadContainer = event.currentTarget as HTMLElement
+      uploadContainer.classList.remove('highlight')
+    }
 
     return {
       selectedFiles,
@@ -145,18 +158,19 @@ export default defineComponent({
       isLoading,
       showModal,
       modalMessage,
+      showNotification,
       fileInput,
       handleFileChange,
       handleDrop,
       handleUpload,
       handleModalClose,
-      goToExtractedView,
+      confirmNotification,
       triggerFileInput,
       highlight,
-      unhighlight,
-    };
-  },
-});
+      unhighlight
+    }
+  }
+})
 </script>
 
 <style scoped>
@@ -187,7 +201,7 @@ export default defineComponent({
 }
 
 .upload-container.highlight {
-  border-color: #007BFF;
+  border-color: #007bff;
 }
 
 h2 {
@@ -273,7 +287,11 @@ p {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>

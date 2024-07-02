@@ -39,7 +39,6 @@ const router = createRouter({
       name: 'extracted-data',
       component: ExtractedView
     }
-
   ]
 })
 

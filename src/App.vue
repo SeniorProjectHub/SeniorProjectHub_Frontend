@@ -64,11 +64,14 @@ body {
   font-weight: bold;
   font-size: 18px;
   padding: 10px 20px;
-  transition: color 0.3s, background-color 0.3s, border-bottom 0.3s;
+  transition:
+    color 0.3s,
+    background-color 0.3s,
+    border-bottom 0.3s;
 }
 
 .nav-link:hover {
-  border-bottom: 2px solid #2596BE;
+  border-bottom: 2px solid #2596be;
 }
 
 .user-profile {

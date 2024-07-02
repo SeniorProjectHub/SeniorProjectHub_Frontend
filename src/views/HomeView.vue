@@ -49,7 +49,8 @@ import { RouterLink, RouterView } from 'vue-router'
   top: calc(50% - 116px / 2);
 }
 
-.welcome-message h1, .welcome-message h2 {
+.welcome-message h1,
+.welcome-message h2 {
   font-family: 'Inter';
   color: black; /* Inside auto layout */
 }
