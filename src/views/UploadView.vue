@@ -10,7 +10,7 @@
       @dragenter="highlight"
     >
       <h2>Upload Senior Project PDF Files</h2>
-      <input type="file" multiple @change="handleFileChange" class="file-input" />
+      <input type="file" multiple @change="handleFileChange" class="file-input" ref="fileInput" />
       <button @click="triggerFileInput" class="select-button">Select PDF files</button>
       <p>or drop PDF files here</p>
       <div v-if="selectedFiles && selectedFiles.length > 0" class="file-list">
@@ -19,13 +19,15 @@
           <li v-for="(file, index) in selectedFiles" :key="index">{{ file.name }}</li>
         </ul>
       </div>
-      <button @click="handleUpload" class="upload-button" :disabled="isLoading || !selectedFiles || selectedFiles.length === 0">Upload</button>
-      <div v-if="uploadStatus" class="status-message">{{ uploadStatus }}</div>
+      <!-- :disabled="isLoading || !selectedFiles || selectedFiles.length === 0" -->
+      <button @click="handleUpload" class="upload-button" >Upload</button>
       <div v-if="isLoading" class="loader"></div>
       <div v-if="uploadedData && uploadedData.length > 0">
         <button @click="goToExtractedView" class="view-button">View Uploaded Data</button>
       </div>
     </div>
+
+    <ErrorModal v-if="showModal" :show="showModal" title="Upload Error" :message="modalMessage" @close="handleModalClose" />
   </div>
 </template>
 
@@ -33,20 +35,25 @@
 import { defineComponent, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
+import ErrorModal from '../components/modal/ErrorModal.vue';
 
 export default defineComponent({
   name: 'UploadView',
+  components: {
+    ErrorModal,
+  },
   setup() {
     const selectedFiles = ref<FileList | null>(null);
-    const uploadStatus = ref<string>('');
     const uploadedData = ref<object[]>([]);
     const isLoading = ref<boolean>(false);
+    const showModal = ref<boolean>(false);
+    const modalMessage = ref<string>('');
+    const fileInput = ref<HTMLInputElement | null>(null);
     const router = useRouter();
     const store = useStore();
 
     const triggerFileInput = () => {
-      const fileInput = document.querySelector('.file-input') as HTMLInputElement;
-      fileInput.click();
+      fileInput.value?.click();
     };
 
     const handleFileChange = (event: Event) => {
@@ -63,7 +70,9 @@ export default defineComponent({
 
     const handleUpload = async () => {
       if (!selectedFiles.value) {
-        uploadStatus.value = 'No files selected.';
+        showModal.value = true;
+        modalMessage.value = 'No files selected.';
+        resetFileInput();
         return;
       }
 
@@ -83,20 +92,37 @@ export default defineComponent({
         try {
           const result = JSON.parse(text);
           if (response.ok) {
-            uploadStatus.value = 'Extracted completed';
             uploadedData.value = result;
             store.dispatch('updateUploadedData', result); // Save to Vuex store
           } else {
-            uploadStatus.value = `Extracted failed: ${result.error}`;
+            showModal.value = true;
+            modalMessage.value = `Extraction failed: ${result.error}`;
+            resetFileInput();
           }
         } catch (e) {
-          uploadStatus.value = `Extracted failed: Invalid JSON response - ${text}`;
+          showModal.value = true;
+          modalMessage.value = `Extraction failed: Invalid JSON response - ${text}`;
+          resetFileInput();
         }
       } catch (error) {
-        uploadStatus.value = `Extracted error: ${error}`;
+        showModal.value = true;
+        modalMessage.value = `Extraction error: ${error}`;
+        resetFileInput();
       } finally {
         isLoading.value = false;
       }
+    };
+
+    const resetFileInput = () => {
+      selectedFiles.value = null;
+      if (fileInput.value) {
+        fileInput.value.value = '';
+      }
+    };
+
+    const handleModalClose = () => {
+      showModal.value = false;
+      resetFileInput();
     };
 
     const goToExtractedView = () => {
@@ -115,12 +141,15 @@ export default defineComponent({
 
     return {
       selectedFiles,
-      uploadStatus,
       uploadedData,
       isLoading,
+      showModal,
+      modalMessage,
+      fileInput,
       handleFileChange,
       handleDrop,
       handleUpload,
+      handleModalClose,
       goToExtractedView,
       triggerFileInput,
       highlight,
