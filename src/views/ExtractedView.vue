@@ -3,8 +3,8 @@
     <h2>Uploaded Data</h2>
     <div v-for="(data, index) in uploadedData" :key="index" class="uploaded-item">
       <h3 @click="toggleDropdown(index)">
-        File: {{ data.filename }} 
-        <span :class="{'dropdown-icon': true, 'open': isDropdownOpen[index]}">&#9660;</span>
+        File: {{ data.filename }}
+        <span :class="{ 'dropdown-icon': true, open: isDropdownOpen[index] }">&#9660;</span>
       </h3>
       <div v-show="isDropdownOpen[index]" class="form-section">
         <div v-if="data.status === 'uploaded'">
@@ -26,7 +26,13 @@
           </label>
           <label class="form-label">
             Summary:
-            <textarea v-model="data.data.summary" class="form-textarea"></textarea>
+            <textarea
+              v-model="data.data.summary"
+              class="form-textarea"
+              @input="autoExpand($event)"
+              @focus="autoExpand($event)"
+              ref="summaryTextarea"
+            ></textarea>
           </label>
         </div>
         <div v-else-if="data.status === 'exists'" class="exists-message">
@@ -35,76 +41,119 @@
       </div>
     </div>
     <button @click="handleSaveAll" class="save-button" :disabled="isLoading">Save All</button>
-    <button @click="cancelAction" class="cancel-button">Cancel</button>
+    <button @click="showModal" class="cancel-button">Cancel</button>
     <div v-if="isLoading" class="loader"></div>
 
-    <div v-if="showNotification" class="modal-overlay">
-      <div class="modal-content">
-        <p>Upload successful: {{ uploadedTitles }}</p>
-        <button @click="confirmNotification" class="confirm-button">OK</button>
-      </div>
-    </div>
+    <custom-modal
+      v-if="isModalVisible"
+      :show="isModalVisible"
+      message="Are you sure you want to cancel?"
+      @confirm="confirmCancel"
+      @cancel="hideModal"
+    ></custom-modal>
+
+    <custom-success-modal
+      v-if="showNotification"
+      :show="showNotification"
+      :titles="uploadedTitles"
+      :message="'Document has been uploaded'"
+      @confirm="confirmNotification"
+    ></custom-success-modal>
   </div>
 </template>
 
-
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useStore } from 'vuex';
+import { defineComponent, ref, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
+import CustomModal from '../components/modal/CancelModal.vue'
+import CustomSuccessModal from '../components/modal/CustomSuccessModal.vue'
 
 export default defineComponent({
   name: 'ExtractedView',
+  components: {
+    CustomModal,
+    CustomSuccessModal
+  },
   setup() {
-    const store = useStore();
-    const router = useRouter();
-    const uploadedData = ref(store.getters.getUploadedData);
-    const isDropdownOpen = ref<boolean[]>(new Array(uploadedData.value.length).fill(false));
-    const isLoading = ref(false);
-    const showNotification = ref(false);
-    const uploadedTitles = ref('');
+    const store = useStore()
+    const router = useRouter()
+    const uploadedData = ref(store.getters.getUploadedData)
+    const isDropdownOpen = ref<boolean[]>(new Array(uploadedData.value.length).fill(false))
+    const isLoading = ref(false)
+    const showNotification = ref(false)
+    const uploadedTitles = ref('')
+    const isModalVisible = ref(false)
 
     const toggleDropdown = (index: number) => {
-      isDropdownOpen.value[index] = !isDropdownOpen.value[index];
-    };
+      isDropdownOpen.value[index] = !isDropdownOpen.value[index]
+      nextTick(() => {
+        autoExpandAll()
+      })
+    }
 
     const handleSaveAll = async () => {
-      isLoading.value = true;
+      isLoading.value = true
       try {
         const response = await fetch('http://localhost:5000/save', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
           },
-          body: JSON.stringify(uploadedData.value),
-        });
+          body: JSON.stringify(uploadedData.value)
+        })
 
         if (response.ok) {
-          const result = await response.json();
-          console.log('Upload successful:', result);
-          uploadedTitles.value = uploadedData.value.map(data => data.data.title).join(', ');
-          showNotification.value = true;
+          const result = await response.json()
+          console.log('Upload successful:', result)
+          uploadedTitles.value = uploadedData.value.map((data) => data.data.title).join(', ')
+          showNotification.value = true
         } else {
-          const error = await response.text();
-          console.error('Upload failed:', error);
+          const error = await response.text()
+          console.error('Upload failed:', error)
         }
       } catch (error) {
-        console.error('Upload error:', error);
+        console.error('Upload error:', error)
       } finally {
-        isLoading.value = false;
+        isLoading.value = false
       }
-    };
+    }
 
     const confirmNotification = () => {
-      showNotification.value = false;
-      router.push({ name: 'list-view' });
-    };
+      showNotification.value = false
+      router.push({ name: 'list-view' })
+    }
 
-    const cancelAction = () => {
-      if (window.confirm('Are you sure you want to cancel?')) {
-        router.push({ name: 'upload-document' });
-      }
-    };
+    const showModal = () => {
+      isModalVisible.value = true
+    }
+
+    const hideModal = () => {
+      isModalVisible.value = false
+    }
+
+    const confirmCancel = () => {
+      isModalVisible.value = false
+      router.push({ name: 'upload-document' })
+    }
+
+    const autoExpand = (event: Event) => {
+      const textarea = event.target as HTMLTextAreaElement
+      textarea.style.height = 'auto'
+      textarea.style.height = textarea.scrollHeight + 'px'
+    }
+
+    const autoExpandAll = () => {
+      nextTick(() => {
+        uploadedData.value.forEach((data, index) => {
+          const textarea = document.querySelectorAll('.form-textarea')[index] as HTMLTextAreaElement
+          if (textarea) {
+            textarea.style.height = 'auto'
+            textarea.style.height = textarea.scrollHeight + 'px'
+          }
+        })
+      })
+    }
 
     return {
       uploadedData,
@@ -112,15 +161,19 @@ export default defineComponent({
       isLoading,
       showNotification,
       uploadedTitles,
+      isModalVisible,
       toggleDropdown,
       handleSaveAll,
       confirmNotification,
-      cancelAction,
-    };
-  },
-});
+      showModal,
+      hideModal,
+      confirmCancel,
+      autoExpand,
+      autoExpandAll
+    }
+  }
+})
 </script>
-
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
@@ -166,31 +219,39 @@ h3 {
 .form-label {
   display: block;
   margin-bottom: 10px;
+  font-weight: bold;
 }
 
-.form-input, .form-textarea {
+.form-input,
+.form-textarea {
   width: 100%;
-  padding: 10px;
+  padding: 8px 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 14px;
+  margin-top: 5px;
+  box-sizing: border-box;
 }
 
 .form-textarea {
-  resize: vertical;
-  height: 80px;
+  resize: none;
+  overflow: hidden;
+  height: auto;
+  min-height: 100px;
+  max-height: 1000px;
 }
 
 .exists-message {
   color: #d9534f;
 }
 
-.save-button, .cancel-button {
-  display: block;
-  width: 100%;
+.save-button,
+.cancel-button {
+  display: inline-block;
+  width: 48%;
   color: #ffffff;
   border: none;
-  padding: 10px 20px;
+  padding: 10px 0;
   font-size: 16px;
   font-weight: bold;
   border-radius: 4px;
@@ -214,6 +275,7 @@ h3 {
 
 .cancel-button {
   background-color: #d9534f;
+  margin-left: 4%;
 }
 
 .cancel-button:hover {
@@ -221,8 +283,8 @@ h3 {
 }
 
 .loader {
-  border: 4px solid #f3f3f3; /* Light grey */
-  border-top: 4px solid #3498db; /* Blue */
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -231,8 +293,12 @@ h3 {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .dropdown-icon {
@@ -278,4 +344,3 @@ h3 {
   background-color: #357ae8;
 }
 </style>
-

@@ -20,25 +20,31 @@
       </div>
       <div class="form-group">
         <label for="summary">Summary</label>
-        <textarea v-model="information.summary" id="summary" required></textarea>
+        <textarea
+          v-model="information.summary"
+          id="summary"
+          required
+          @input="autoExpand($event)"
+          @focus="autoExpand($event)"
+        ></textarea>
       </div>
       <button type="submit" class="save-button">Save</button>
     </form>
 
-    <div v-if="showNotification" class="modal-overlay">
-      <div class="modal-content">
-        <p>{{ notificationMessage }}</p>
-        <button @click="confirmNotification" class="confirm-button">OK</button>
-      </div>
-    </div>
+    <custom-success-modal
+      v-if="showNotification"
+      :show="showNotification"
+      :titles="information.title"
+      :message="notificationMessage"
+      @confirm="confirmNotification"
+    ></custom-success-modal>
   </div>
 </template>
 
-
-
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import CustomSuccessModal from '../components/modal/CustomSuccessModal.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -67,6 +73,9 @@ const fetchInformation = async () => {
       summary: data.summary,
       category: data.category
     }
+    nextTick(() => {
+      autoExpandAll()
+    })
   } catch (err) {
     showErrorNotification(err.message)
   }
@@ -115,10 +124,24 @@ const confirmNotification = () => {
   }
 }
 
+const autoExpand = (event) => {
+  const textarea = event.target
+  textarea.style.height = 'auto'
+  textarea.style.height = textarea.scrollHeight + 'px'
+}
+
+const autoExpandAll = () => {
+  nextTick(() => {
+    const textarea = document.getElementById('summary')
+    if (textarea) {
+      textarea.style.height = 'auto'
+      textarea.style.height = textarea.scrollHeight + 'px'
+    }
+  })
+}
+
 onMounted(fetchInformation)
 </script>
-
-
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
@@ -165,7 +188,8 @@ h1 {
 }
 
 .form-group textarea {
-  resize: vertical;
+  resize: none; /* Prevent manual resizing */
+  overflow: hidden; /* Hide overflow content */
   min-height: 100px;
 }
 
@@ -221,5 +245,3 @@ h1 {
   background-color: #357ae8;
 }
 </style>
-
-
