@@ -8,6 +8,7 @@
     <nav class="nav-center">
       <RouterLink to="/upload" class="nav-link">Upload</RouterLink>
       <RouterLink to="/list-view" class="nav-link">Document List</RouterLink>
+      <RouterLink to="/search" class="nav-link">Search</RouterLink>
     </nav>
     <div class="user-profile">
       <img src="@/assets/admin-icon.svg" alt="Admin Icon" />

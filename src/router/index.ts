@@ -5,6 +5,7 @@ import InformationView from '../views/InformationView.vue'
 import InformationEditView from '../views/InformationEditView.vue'
 import UploadView from '../views/UploadView.vue'
 import ExtractedView from '../views/ExtractedView.vue'
+import SearchView from '../views/SearchView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,6 +39,11 @@ const router = createRouter({
       path: '/extracted-data',
       name: 'extracted-data',
       component: ExtractedView
+    },
+    {
+      path: '/search',
+      name: 'search',
+      component: SearchView
     }
   ]
 })
