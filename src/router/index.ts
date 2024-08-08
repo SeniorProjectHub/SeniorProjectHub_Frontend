@@ -23,7 +23,8 @@ const router = createRouter({
     {
       path: '/information/:id',
       name: 'information',
-      component: InformationView
+      component: InformationView,
+      props: true
     },
     {
       path: '/information/:id/edit',
