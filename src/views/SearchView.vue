@@ -104,23 +104,28 @@ const onInputChange = () => {
 }
 
 const performGlobalSearch = async () => {
+  // Check if the query is not empty
   if (!globalQuery.value.trim()) return
 
+  // Start the loading indicator
   loading.value = true
   results.value = []
 
   try {
-    const response = await axios.get('http://localhost:5000/search', {
+    // Send a GET request to the Flask backend
+    const response = await axios.get('http://localhost:5000/semantic_search', {
       params: {
-        query: globalQuery.value,
-        searchBy: 'all',
-        year: year.value
+        query: globalQuery.value
+        // Additional parameters can be added here if needed
       }
     })
+
+    // Update the results with the response data
     results.value = response.data
   } catch (error) {
     console.error('Error performing search:', error)
   } finally {
+    // Stop the loading indicator
     loading.value = false
   }
 }

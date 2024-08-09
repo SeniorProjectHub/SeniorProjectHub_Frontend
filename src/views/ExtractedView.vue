@@ -94,22 +94,30 @@ export default defineComponent({
     const handleSaveAll = async () => {
       isLoading.value = true
       try {
-        const response = await fetch('http://localhost:5000/save', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(uploadedData.value)
-        })
+        // Filter only the data with status 'uploaded'
+        const filteredData = uploadedData.value.filter((data) => data.status === 'uploaded')
 
-        if (response.ok) {
-          const result = await response.json()
-          console.log('Upload successful:', result)
-          uploadedTitles.value = uploadedData.value.map((data) => data.data.title).join(', ')
-          showNotification.value = true
+        // Proceed only if there's data to save
+        if (filteredData.length > 0) {
+          const response = await fetch('http://localhost:5000/save', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(filteredData)
+          })
+
+          if (response.ok) {
+            const result = await response.json()
+            console.log('Upload successful:', result)
+            uploadedTitles.value = filteredData.map((data) => data.data.title).join(', ')
+            showNotification.value = true
+          } else {
+            const error = await response.text()
+            console.error('Upload failed:', error)
+          }
         } else {
-          const error = await response.text()
-          console.error('Upload failed:', error)
+          console.log('No data to save.')
         }
       } catch (error) {
         console.error('Upload error:', error)
