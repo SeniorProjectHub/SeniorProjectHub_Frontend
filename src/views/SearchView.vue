@@ -31,14 +31,17 @@
           :placeholder="'Search by ' + searchBy"
           class="search-input"
         />
-        <button @click="performSearch" class="search-button">
-          <i class="fa fa-search"></i>
-        </button>
-        <!-- <select v-model="year" class="year-select">
+        <select v-model="year" class="year-select">
+          <option value="">All Years</option>
+          <!-- This option allows clearing the year selection -->
           <option v-for="yearOption in yearOptions" :key="yearOption" :value="yearOption">
             {{ yearOption }}
           </option>
-        </select> -->
+        </select>
+
+        <button @click="performSearch" class="search-button">
+          <i class="fa fa-search"></i>
+        </button>
       </div>
       <div class="search-results">
         <div v-if="loading" class="loading">Loading...</div>
@@ -51,6 +54,7 @@
             <p class="result-authors">Student: {{ result.authors.join(', ') }}</p>
             <p class="result-advisor">Advisor: {{ result.advisor }}</p>
             <p class="result-tags">Tags: {{ result.subject_tags.join(', ') }}</p>
+            <p>{{ result.time_stamp }}</p>
             <button class="expand-summary-button" @click="toggleSummary(index)">
               <i class="fa fa-search"></i> Expand Summary
             </button>
@@ -65,9 +69,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import axios from 'axios'
-import { useRouter } from 'vue-router'
 
 const globalQuery = ref('')
 const query = ref('')
@@ -84,11 +87,10 @@ const results = ref<
 >([])
 const loading = ref(false)
 const searchBy = ref('title')
-const year = ref(new Date().getFullYear())
+const year = ref('') // Initialize year as an empty string
+const yearOptions = ref<string[]>([])
 const expandedIndex = ref<number | null>(null)
-
 let debounceTimeout: ReturnType<typeof setTimeout> | null = null
-
 const onGlobalInputChange = () => {
   if (debounceTimeout) clearTimeout(debounceTimeout)
   debounceTimeout = setTimeout(() => {
@@ -138,7 +140,9 @@ const performSearch = async () => {
         year: year.value
       }
     })
+    console.log('Search response:', response.data) // Debugging: log the search response
     results.value = response.data
+    console.log('Results after search:', results.value) // Debugging: log the results
   } catch (error) {
     console.error('Error performing search:', error)
   } finally {
@@ -154,12 +158,19 @@ const toggleSummary = (index: number) => {
   }
 }
 
-// Computed property to get unique years from the time_stamp field
-const yearOptions = computed(() => {
-  const years = results.value.map((result) => {
-    return new Date(result.time_stamp).getFullYear()
-  })
-  return Array.from(new Set(years)) // Remove duplicates
+const fetchYears = async () => {
+  try {
+    const response = await axios.get('http://localhost:5000/years')
+    yearOptions.value = response.data
+    console.log('Available years:', yearOptions.value) // Debugging: log available years
+  } catch (error) {
+    console.error('Error fetching years:', error)
+  }
+}
+
+// Fetch available years when the component is mounted
+onMounted(() => {
+  fetchYears()
 })
 </script>
 

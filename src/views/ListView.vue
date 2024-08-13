@@ -1,23 +1,38 @@
 <template>
   <div class="document">
     <h1>Document List</h1>
+
+    <!-- Sort Section -->
+    <div class="sort-section">
+      <select v-model="selectedSort" class="sort-dropdown">
+        <option value="latest">Latest Update</option>
+        <option value="year">Year</option>
+        <option value="name-az">Name A-Z</option>
+        <option value="name-za">Name Z-A</option>
+      </select>
+    </div>
+
+    <!-- Document Grid -->
     <div class="document-grid">
-      <div v-for="info in informations" :key="info.id" class="document-item">
+      <div v-for="info in sortedInformations" :key="info.id" class="document-item">
         <img src="@/assets/pdf.svg" alt="PDF Logo" class="pdf-logo" />
-        <router-link :to="`/information/${info.id}`" class="document-title">{{
-          info.title
-        }}</router-link>
+        <router-link :to="`/information/${info.id}`" class="document-title">
+          {{ info.title }}
+        </router-link>
       </div>
     </div>
+
+    <!-- Error Message -->
     <div v-if="error" class="error">{{ error }}</div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const informations = ref([])
+const selectedSort = ref('name-az')
 const error = ref(null)
 const router = useRouter()
 
@@ -34,6 +49,24 @@ const fetchInformations = async () => {
   }
 }
 
+// Computed property to sort the documents
+const sortedInformations = computed(() => {
+  let sorted = informations.value
+
+  // Sort by the selected criteria
+  if (selectedSort.value === 'latest') {
+    sorted = sorted.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+  } else if (selectedSort.value === 'year') {
+    sorted = sorted.sort((a, b) => new Date(b.year) - new Date(a.year))
+  } else if (selectedSort.value === 'name-az') {
+    sorted = sorted.sort((a, b) => a.title.localeCompare(b.title))
+  } else if (selectedSort.value === 'name-za') {
+    sorted = sorted.sort((a, b) => b.title.localeCompare(a.title))
+  }
+
+  return sorted
+})
+
 onMounted(fetchInformations)
 </script>
 
@@ -45,7 +78,6 @@ onMounted(fetchInformations)
 }
 
 .document {
-  font-family: 'Inter', sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -55,6 +87,21 @@ onMounted(fetchInformations)
 h1 {
   font-size: 2rem;
   margin-bottom: 20px;
+}
+
+.sort-section {
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.sort-dropdown {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 .document-grid {
@@ -76,7 +123,7 @@ h1 {
 }
 
 .document-item .pdf-logo {
-  width: 50px; /* Adjust size as needed */
+  width: 50px;
   height: auto;
   margin-bottom: 10px;
 }
