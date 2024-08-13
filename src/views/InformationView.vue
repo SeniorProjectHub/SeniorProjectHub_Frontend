@@ -14,7 +14,13 @@
         <strong>Brief summary</strong>
         <p>{{ information.summary }}</p>
       </div>
-      <p><strong>Last Update:</strong> {{ new Date(information.timestamp).toLocaleString() }}</p>
+      <!-- Display Public Date -->
+      <p>
+        <strong>Public Date:</strong>
+        {{ information.time_stamp ? new Date(information.time_stamp).toLocaleString() : 'N/A' }}
+        <strong>Last Update:</strong>
+        {{ information.update_time ? new Date(information.update_time).toLocaleString() : 'N/A' }}
+      </p>
     </div>
     <div v-if="error" class="error">{{ error }}</div>
     <DeleteConfirmationModal

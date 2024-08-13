@@ -34,11 +34,11 @@
         <button @click="performSearch" class="search-button">
           <i class="fa fa-search"></i>
         </button>
-        <select v-model="year" class="year-select">
+        <!-- <select v-model="year" class="year-select">
           <option v-for="yearOption in yearOptions" :key="yearOption" :value="yearOption">
             {{ yearOption }}
           </option>
-        </select>
+        </select> -->
       </div>
       <div class="search-results">
         <div v-if="loading" class="loading">Loading...</div>
@@ -65,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 
@@ -79,12 +79,12 @@ const results = ref<
     advisor: string
     subject_tags: string[]
     summary: string
+    time_stamp: string
   }>
 >([])
 const loading = ref(false)
 const searchBy = ref('title')
 const year = ref(new Date().getFullYear())
-const yearOptions = ref([2023, 2022, 2021, 2020])
 const expandedIndex = ref<number | null>(null)
 
 let debounceTimeout: ReturnType<typeof setTimeout> | null = null
@@ -104,28 +104,22 @@ const onInputChange = () => {
 }
 
 const performGlobalSearch = async () => {
-  // Check if the query is not empty
   if (!globalQuery.value.trim()) return
 
-  // Start the loading indicator
   loading.value = true
   results.value = []
 
   try {
-    // Send a GET request to the Flask backend
     const response = await axios.get('http://localhost:5000/semantic_search', {
       params: {
         query: globalQuery.value
-        // Additional parameters can be added here if needed
       }
     })
 
-    // Update the results with the response data
     results.value = response.data
   } catch (error) {
     console.error('Error performing search:', error)
   } finally {
-    // Stop the loading indicator
     loading.value = false
   }
 }
@@ -153,13 +147,20 @@ const performSearch = async () => {
 }
 
 const toggleSummary = (index: number) => {
-  console.log(results.value)
   if (expandedIndex.value === index) {
     expandedIndex.value = null
   } else {
     expandedIndex.value = index
   }
 }
+
+// Computed property to get unique years from the time_stamp field
+const yearOptions = computed(() => {
+  const years = results.value.map((result) => {
+    return new Date(result.time_stamp).getFullYear()
+  })
+  return Array.from(new Set(years)) // Remove duplicates
+})
 </script>
 
 <style scoped>
