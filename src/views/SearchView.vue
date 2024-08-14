@@ -127,7 +127,7 @@ const performGlobalSearch = async () => {
 }
 
 const performSearch = async () => {
-  if (!query.value.trim()) return
+  // if (!query.value.trim()) return
 
   loading.value = true
   results.value = []
