@@ -45,7 +45,7 @@ const router = createRouter({
     },
     {
       path: '/admin/list',
-      name: 'upload-document',
+      name: 'document-list',
       component: ListView
     },
     {
