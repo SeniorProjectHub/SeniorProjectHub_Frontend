@@ -6,10 +6,11 @@
       </RouterLink>
     </div>
     <nav class="nav-center">
-      <RouterLink to="/upload" class="nav-link">Upload</RouterLink>
-      <RouterLink to="/list-view" class="nav-link">Document List</RouterLink>
-      <RouterLink to="/search" class="nav-link">Search</RouterLink>
-      <RouterLink to="/question" class="nav-link">Q&A</RouterLink>
+      <RouterLink v-if="isAdminRoute" to="/admin/upload" class="nav-link">Upload</RouterLink>
+      <RouterLink v-if="isAdminRoute" to="/admin/list" class="nav-link">Document List</RouterLink>
+      <RouterLink v-if="isRootRoute" to="/list-view" class="nav-link">Document List</RouterLink>
+      <RouterLink v-if="isRootRoute" to="/search" class="nav-link">Search</RouterLink>
+      <RouterLink v-if="isRootRoute" to="/question" class="nav-link">Q&A</RouterLink>
     </nav>
     <div class="user-profile">
       <img src="@/assets/admin-icon.svg" alt="Admin Icon" />
@@ -21,8 +22,22 @@
 </template>
 
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
+import { computed } from 'vue'
+
+const route = useRoute()
+
+// Show admin-related links when the current path starts with "/admin"
+const isAdminRoute = computed(() => {
+  return ['/admin', '/admin/upload', '/admin/list'].includes(route.path)
+})
+
+// Show root-related links when the current path is exactly "/" or matches certain paths
+const isRootRoute = computed(() => {
+  return ['/', '/search', '/question', '/list-view'].includes(route.path)
+})
 </script>
+
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');

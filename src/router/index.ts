@@ -7,6 +7,7 @@ import UploadView from '../views/UploadView.vue'
 import ExtractedView from '../views/ExtractedView.vue'
 import SearchView from '../views/SearchView.vue'
 import ChatbotView from '../views/ChatbotView.vue'
+import AdminView from '../views/AdminDashboardView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,6 +16,11 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView
+    },
+    {
+      path: '/admin',
+      name: 'admin-dashboard',
+      component: AdminView
     },
     {
       path: '/list-view',
@@ -33,9 +39,14 @@ const router = createRouter({
       component: InformationEditView
     },
     {
-      path: '/upload',
+      path: '/admin/upload',
       name: 'upload-document',
       component: UploadView
+    },
+    {
+      path: '/admin/list',
+      name: 'upload-document',
+      component: ListView
     },
     {
       path: '/extracted-data',

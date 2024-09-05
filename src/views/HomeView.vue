@@ -5,8 +5,19 @@ import { RouterLink, RouterView } from 'vue-router'
 <template>
   <main class="main-content">
     <div class="welcome-message">
-      <h1>Hi, Admin</h1>
+      <h1>Hi, Student</h1>
       <h2>Welcome To SeniorProjectHub</h2>
+      <h3>What Can You Do With SeniorProjectHub?</h3>
+      <div class="features">
+        <ul>
+          <li>Ask questions and receive immediate responses related to Senior Projects</li>
+          <li>Access completed Senior Project PDF document files</li>
+          <li>View all project information consolidated in one convenient platform</li>
+        </ul>
+      </div>
+      <div class="button-container">
+        <button class="ask-button">Ask Now</button>
+      </div>
     </div>
   </main>
 </template>
@@ -16,6 +27,9 @@ import { RouterLink, RouterView } from 'vue-router'
 
 * {
   font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .main-content {
@@ -23,36 +37,33 @@ import { RouterLink, RouterView } from 'vue-router'
   justify-content: center;
   align-items: center;
   height: calc(100vh - 60px); /* Subtract header height */
-  /* background: linear-gradient(
+  background: linear-gradient(
     73.26deg,
     #070537 0.87%,
     #615882 33.62%,
     #c33538 86.86%,
     #dc8e00 113.01%,
     #a8eb12 129.03%
-  ); */
+  );
   color: white;
-  text-align: center;
 }
 
 .welcome-message {
   display: flex;
-  flex-direction: column; /* Change to column to stack vertically */
+  flex-direction: column;
   justify-content: center;
-  align-items: center;
-  padding: 10px;
-  gap: 10px;
-  position: absolute;
-  width: 594px;
-  height: 116px;
-  left: calc(50% - 594px / 2);
-  top: calc(50% - 116px / 2);
+  align-items: flex-start; /* Align text to the left */
+  padding: 20px;
+  gap: 20px;
+  position: relative;
+  width: 700px; /* Adjusted width */
+  text-align: left; /* Align all text to the left */
 }
 
 .welcome-message h1,
 .welcome-message h2 {
   font-family: 'Inter';
-  color: black; /* Inside auto layout */
+  color: white;
 }
 
 .welcome-message h1 {
@@ -63,7 +74,46 @@ import { RouterLink, RouterView } from 'vue-router'
 
 .welcome-message h2 {
   font-weight: 400;
-  font-size: 24px; /* Adjust font size as needed */
-  line-height: 32px; /* Adjust line height as needed */
+  font-size: 24px;
+  line-height: 32px;
+  margin-bottom: 20px;
+}
+
+.welcome-message h3 {
+  font-weight: 700;
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.features ul {
+  list-style-type: disc; /* Add bullet points */
+  padding-left: 20px; /* Add padding to the left for bullets */
+  font-size: 18px;
+  line-height: 1.5;
+  color: #ffffff;
+}
+
+.features ul li {
+  margin-bottom: 10px;
+}
+
+.button-container {
+  width: 100%;
+  display: flex;
+  justify-content: center; /* Center the button horizontally */
+}
+
+.ask-button {
+  padding: 10px 20px;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.ask-button:hover {
+  background-color: #333;
 }
 </style>
