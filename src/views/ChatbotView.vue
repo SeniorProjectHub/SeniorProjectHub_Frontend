@@ -1,58 +1,84 @@
 <template>
   <div class="chatbot-container">
-    <div class="chatbot-header">
-      <h2>Q&A</h2>
-    </div>
-
-    <div class="chatbot-messages" ref="messagesContainer">
-      <div
-        v-for="message in messages"
-        :key="message.id"
-        :class="['message', message.isUser ? 'user-message' : 'bot-message']"
-      >
-        <div class="message-avatar">
-          <div class="avatar-text">{{ message.isUser ? '👤' : '🤖' }}</div>
+    <div class="chat-interface">
+      <!-- Greeting section, visible if the chat hasn't started -->
+      <div v-if="!isChatStarted" class="greeting-section">
+        <div class="greeting-header">
+          <img src="../assets/SeniorProjectHub_logo.svg" alt="Logo" class="logo" />
+          <h1>Hi, Student</h1>
         </div>
-        <div class="message-content">
-          <p>{{ message.text }}</p>
-          <div v-if="message.references && message.references.length > 0" class="references">
-            <h4>References:</h4>
-            <ul>
-              <li v-for="ref in message.references" :key="ref._id">
-                <a :href="`/information/${ref._id}`" target="_blank" rel="noopener noreferrer">{{
-                  ref.title
-                }}</a>
-              </li>
-            </ul>
+        <div class="question-section">
+          <h3>Questions You Can Ask</h3>
+          <ul class="question-list">
+            <li @click="sendMessage('Who did the project BIRDER?')">Who did the project BIRDER?</li>
+            <li @click="sendMessage('What is the project GPT 4 Baker about?')">What is the project GPT 4 Baker about?</li>
+            <li @click="sendMessage('Which project involves using AI?')">Which project involves using AI?</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Chat messages, visible when the chat has started -->
+      <div v-else class="chatbox">
+        <div class="chatbot-messages" ref="messagesContainer">
+          <div
+            v-for="message in messages"
+            :key="message.id"
+            :class="['message', message.isUser ? 'user-message' : 'bot-message']"
+          >
+            <div v-if="!message.isUser" class="message-avatar">
+              <img src="../assets/SeniorProjectHub_logo.svg" alt="Bot" class="bot-avatar" />
+            </div>
+            <div class="message-content">
+              <p>{{ message.text }}</p>
+              <div v-if="message.references && message.references.length > 0" class="references">
+                <h4>Reference</h4>
+                <ul>
+                  <li v-for="ref in message.references" :key="ref._id">
+                    <a :href="`/information/${ref._id}`" target="_blank" rel="noopener noreferrer">
+                      {{ ref.title }}
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Typing indicator -->
+          <div v-if="isTyping" class="message bot-message typing-indicator">
+            <div class="message-avatar">
+              <img src="../assets/SeniorProjectHub_logo.svg" alt="Bot" class="bot-avatar" />
+            </div>
+            <div class="message-content">
+              <div class="typing">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Typing indicator -->
-      <div v-if="isTyping" class="message bot-message typing-indicator">
-        <div class="message-avatar">
-          <div class="avatar-text">🤖</div>
-        </div>
-        <div class="message-content">
-          <div class="typing">
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-          </div>
+      <!-- Chat Input, always visible -->
+      <div class="chatbot-input">
+        <div class="input-wrapper">
+          <input
+            type="text"
+            v-model="userInput"
+            placeholder="Type message..."
+            @keyup.enter="sendMessage()"
+            @input="validateInput"
+          />
+          <button @click="sendMessage()" :disabled="!userInput.trim()">
+            <span class="send-icon">&#10148;</span>
+          </button>
         </div>
       </div>
-    </div>
 
-    <div class="chatbot-input">
-      <input
-        type="text"
-        v-model="userInput"
-        placeholder="Type a message..."
-        @keyup.enter="sendMessage"
-      />
-      <button @click="sendMessage" :disabled="!userInput.trim()">
-        <span class="send-icon">&#10148;</span>
-      </button>
+      <!-- Alert box for non-English input -->
+      <div v-if="showAlert" class="alert-box">
+        Only English characters are allowed.
+      </div>
     </div>
   </div>
 </template>
@@ -79,6 +105,8 @@ export default defineComponent({
     const messages = ref<Message[]>([])
     const messagesContainer = ref<HTMLElement | null>(null)
     const isTyping = ref(false)
+    const isChatStarted = ref(false)
+    const showAlert = ref(false)
 
     const scrollToBottom = () => {
       nextTick(() => {
@@ -88,17 +116,38 @@ export default defineComponent({
       })
     }
 
-    const sendMessage = async () => {
-      if (userInput.value.trim() === '') return
+    const validateInput = (event: Event) => {
+      const input = (event.target as HTMLInputElement).value
+      // eslint-disable-next-line no-useless-escape
+      const validInputRegex = /^[A-Za-z0-9\s!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]*$/
+      
+      if (!validInputRegex.test(input)) {
+        showAlert.value = true
+        // eslint-disable-next-line no-control-regex
+        userInput.value = userInput.value.replace(/[^\x00-\x7F]/g, '')
+        
+        // Hide the alert after 3 seconds
+        setTimeout(() => {
+          showAlert.value = false
+        }, 3000)
+      } else {
+        showAlert.value = false
+      }
+    }
+
+    const sendMessage = async (presetMessage = '') => {
+      const messageText = presetMessage || userInput.value.trim()
+      if (messageText === '') return
+
+      isChatStarted.value = true
 
       const userMessage: Message = {
         id: Date.now(),
-        text: userInput.value,
+        text: messageText,
         isUser: true
       }
       messages.value.push(userMessage)
 
-      const sentMessage = userInput.value
       userInput.value = ''
 
       scrollToBottom()
@@ -107,7 +156,7 @@ export default defineComponent({
 
       try {
         const response = await axios.post('http://localhost:5000/chat', {
-          query: sentMessage
+          query: messageText
         })
 
         isTyping.value = false
@@ -144,7 +193,10 @@ export default defineComponent({
       messages,
       sendMessage,
       messagesContainer,
-      isTyping
+      isTyping,
+      isChatStarted,
+      validateInput,
+      showAlert
     }
   }
 })
@@ -154,94 +206,166 @@ export default defineComponent({
 .chatbot-container {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  align-items: center;
   height: 100vh;
-  font-family: Arial, sans-serif;
-  background-color: #f0f2f5;
+  font-family: 'Inter', sans-serif;
+  background-color: #ffffff;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
-.chatbot-header {
-  background-color: #007bff;
-  color: white;
+.chat-interface {
+  display: flex;
+  flex-direction: column;
+  width: 85%;
+  max-width: 1200px;
+  height: 100%;
+  margin: 0 auto;
+}
+
+/* Custom scrollbar for Webkit browsers */
+.chatbot-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chatbot-messages::-webkit-scrollbar-track {
+  background: #f1f3f5;
+  border-radius: 3px;
+}
+
+.chatbot-messages::-webkit-scrollbar-thumb {
+  background-color: #6c757d;
+  border-radius: 3px;
+  border: 1px solid #f1f3f5;
+}
+
+.chatbot-messages::-webkit-scrollbar-thumb:hover {
+  background-color: #495057;
+}
+
+.greeting-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.greeting-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+  margin-right: 0.5rem;
+}
+
+.greeting-header h1 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.question-section h3 {
+  font-size: 1rem;
+  margin-bottom: 1rem;
   text-align: center;
-  padding: 15px 0;
-  flex-shrink: 0;
+  color: #666;
 }
 
-.chatbot-header h2 {
-  margin: 0;
-  font-size: 24px;
+.question-list {
+  list-style-type: none;
+  padding: 0;
+  width: 100%;
+  max-width: 400px;
+}
+
+.question-list li {
+  background-color: #f0f2f5;
+  padding: 0.8rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: 0.9rem;
+}
+
+.question-list li:hover {
+  background-color: #e4e6e9;
+}
+
+.chatbox {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  width: 100%;
 }
 
 .chatbot-messages {
   flex: 1;
-  padding: 20px;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
+  padding-right: 0.5rem;
 }
 
 .message {
   display: flex;
-  margin-bottom: 20px;
-  align-items: flex-start;
-  max-width: 80%;
+  margin-bottom: 1rem;
+}
+
+.bot-message {
+  justify-content: flex-start;
+  
 }
 
 .user-message {
-  align-self: flex-end;
-  flex-direction: row-reverse;
+  justify-content: flex-end;
+  
 }
 
 .message-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  overflow: hidden;
-  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  margin-top: 1rem;
+  margin-right: 0.5rem;
 }
 
-.user-message .message-avatar {
-  margin-left: 10px;
-}
-
-.bot-message .message-avatar {
-  margin-right: 10px;
-}
-
-.message-avatar img {
+.bot-avatar {
   width: 100%;
   height: 100%;
-  object-fit: cover;
 }
 
 .message-content {
-  padding: 12px;
+  max-width: 70%;
+  padding: 0rem 0.8rem;
   border-radius: 18px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  font-size: 0.9rem;
 }
 
 .user-message .message-content {
-  background-color: #007bff;
-  color: white;
-}
-
-.bot-message .message-content {
-  background-color: white;
+  background-color: whitesmoke;
+  color: black;
 }
 
 .references {
-  margin-top: 10px;
-  font-size: 14px;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
 }
 
 .references h4 {
-  margin: 0 0 5px;
+  margin: 0 0 0.3rem;
   font-weight: bold;
 }
 
 .references ul {
-  padding-left: 20px;
+  padding-left: 1rem;
   margin: 0;
 }
 
@@ -258,23 +382,29 @@ export default defineComponent({
   text-decoration: underline;
 }
 
-.bot-message .references a {
-  color: #0056b3;
-}
-
 .chatbot-input {
   display: flex;
-  padding: 15px;
-  background-color: white;
-  border-top: 1px solid #e0e0e0;
+  justify-content: center;
+  padding: 0;
+  background-color: #fff;
+  width: 100%;
+}
+
+.input-wrapper {
+  display: flex;
+  width: 100%;
+  max-width: 800px;
+  background-color: #f3f3f3;
+  border-radius: 30px;
+  padding: 0.5rem;
 }
 
 .chatbot-input input {
   flex: 1;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  font-size: 16px;
+  padding: 0.8rem 1.2rem;
+  border: none;
+  background-color: transparent;
+  font-size: 1rem;
   outline: none;
 }
 
@@ -285,7 +415,6 @@ export default defineComponent({
   border-radius: 50%;
   width: 40px;
   height: 40px;
-  margin-left: 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -303,9 +432,8 @@ export default defineComponent({
 }
 
 .send-icon {
-  font-size: 18px;
+  font-size: 1.2rem;
 }
-
 .typing-indicator {
   align-self: flex-start;
 }
@@ -316,73 +444,35 @@ export default defineComponent({
 }
 
 .typing .dot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   background-color: #606060;
   border-radius: 50%;
-  margin-right: 4px;
+  margin-right: 3px;
   animation: typingAnimation 1.4s infinite ease-in-out;
 }
 
-.typing .dot:nth-child(1) {
-  animation-delay: 0s;
+.alert-box {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ff4d4f;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
 }
 
-.typing .dot:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.typing .dot:nth-child(3) {
-  animation-delay: 0.4s;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, 20px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
 }
 
 @keyframes typingAnimation {
-  0% {
-    transform: scale(1);
-    opacity: 0.7;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 0.7;
-  }
-}
-
-@media (min-width: 768px) {
-  .chatbot-container {
-    max-width: none;
-    margin: 0;
-    border-radius: 0;
-    box-shadow: none;
-  }
-
-  .message {
-    max-width: 60%;
-  }
-}
-.message-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  overflow: hidden;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  background-color: #e0e0e0;
-}
-
-.user-message .message-avatar {
-  background-color: #007bff;
-  color: white;
-}
-
-.bot-message .message-avatar {
-  background-color: #28a745;
-  color: white;
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.2); opacity: 1; }
 }
 </style>

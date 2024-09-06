@@ -15,11 +15,11 @@
     <div class="browse-projects">
       <h2>Browse Projects</h2>
       <div class="tabs">
-        <button :class="{ active: searchBy === 'title' }" @click="searchBy = 'title'">
+        <button :class="{ active: searchBy === 'Title' }" @click="searchBy = 'title'">
           By Title
         </button>
-        <button :class="{ active: searchBy === 'tags' }" @click="searchBy = 'tags'">By Tag</button>
-        <button :class="{ active: searchBy === 'advisor' }" @click="searchBy = 'advisor'">
+        <button :class="{ active: searchBy === 'Tag' }" @click="searchBy = 'tags'">By Tag</button>
+        <button :class="{ active: searchBy === 'Advisor' }" @click="searchBy = 'advisor'">
           By Advisor
         </button>
       </div>
@@ -186,7 +186,7 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
-  background-color: #f0f0f0;
+  background-color:white;
   padding: 20px;
   border-radius: 5px;
 }
@@ -228,7 +228,7 @@ onMounted(() => {
   padding: 10px 20px;
   margin: 0 5px;
   cursor: pointer;
-  background-color: #f0f0f0;
+  background-color: white;
   border: none;
   border-bottom: 3px solid transparent;
 }
