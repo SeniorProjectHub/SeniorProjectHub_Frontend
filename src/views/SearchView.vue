@@ -7,6 +7,7 @@
         type="text"
         placeholder="Search by all"
         class="global-search-input"
+        @keypress="validateInput"
       />
       <button @click="performGlobalSearch" class="global-search-button">
         <i class="fa fa-search"></i>
@@ -15,11 +16,11 @@
     <div class="browse-projects">
       <h2>Browse Projects</h2>
       <div class="tabs">
-        <button :class="{ active: searchBy === 'Title' }" @click="searchBy = 'title'">
+        <button :class="{ active: searchBy === 'Title' }" @click="searchBy = 'Title'">
           By Title
         </button>
-        <button :class="{ active: searchBy === 'Tag' }" @click="searchBy = 'tags'">By Tag</button>
-        <button :class="{ active: searchBy === 'Advisor' }" @click="searchBy = 'advisor'">
+        <button :class="{ active: searchBy === 'Tag' }" @click="searchBy = 'Tag'">By Tag</button>
+        <button :class="{ active: searchBy === 'Advisor' }" @click="searchBy = 'Advisor'">
           By Advisor
         </button>
       </div>
@@ -30,22 +31,26 @@
           type="text"
           :placeholder="'Search by ' + searchBy"
           class="search-input"
+          @keypress="validateInput"
         />
         <select v-model="year" class="year-select">
           <option value="">All Years</option>
-          <!-- This option allows clearing the year selection -->
           <option v-for="yearOption in yearOptions" :key="yearOption" :value="yearOption">
             {{ yearOption }}
           </option>
         </select>
-
         <button @click="performSearch" class="search-button">
           <i class="fa fa-search"></i>
         </button>
       </div>
+      <div v-if="showAlert" class="alert-box">
+        Invalid character entered. Only English, numbers, and special characters are allowed.
+      </div>
       <div class="search-results">
         <div v-if="loading" class="loading">Loading...</div>
-        <div v-else-if="results.length === 0" class="no-results">No results found</div>
+        <div v-else-if="searchPerformed && results.length === 0" class="no-results">
+          No results found
+        </div>
         <ul v-else>
           <li v-for="(result, index) in results" :key="index" class="result-item">
             <h3 class="result-title">
@@ -87,10 +92,28 @@ const results = ref<
 >([])
 const loading = ref(false)
 const searchBy = ref('title')
-const year = ref('') // Initialize year as an empty string
+const year = ref('')
 const yearOptions = ref<string[]>([])
 const expandedIndex = ref<number | null>(null)
+const searchPerformed = ref(false)
+const showAlert = ref(false)
+
 let debounceTimeout: ReturnType<typeof setTimeout> | null = null
+
+const validateInput = (event: KeyboardEvent) => {
+  const char = (event.target as HTMLInputElement).value + event.key;
+  // eslint-disable-next-line no-useless-escape
+  const regex = /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/? ]*$/
+
+  if (!regex.test(char)) {
+    event.preventDefault()
+    showAlert.value = true
+    setTimeout(() => {
+      showAlert.value = false
+    }, 3000)
+  }
+}
+
 const onGlobalInputChange = () => {
   if (debounceTimeout) clearTimeout(debounceTimeout)
   debounceTimeout = setTimeout(() => {
@@ -110,6 +133,7 @@ const performGlobalSearch = async () => {
 
   loading.value = true
   results.value = []
+  searchPerformed.value = true
 
   try {
     const response = await axios.get('http://localhost:5000/semantic_search', {
@@ -127,10 +151,9 @@ const performGlobalSearch = async () => {
 }
 
 const performSearch = async () => {
-  // if (!query.value.trim()) return
-
   loading.value = true
   results.value = []
+  searchPerformed.value = true
 
   try {
     const response = await axios.get('http://localhost:5000/search', {
@@ -140,9 +163,9 @@ const performSearch = async () => {
         year: year.value
       }
     })
-    console.log('Search response:', response.data) // Debugging: log the search response
+    console.log('Search response:', response.data)
     results.value = response.data
-    console.log('Results after search:', results.value) // Debugging: log the results
+    console.log('Results after search:', results.value)
   } catch (error) {
     console.error('Error performing search:', error)
   } finally {
@@ -162,13 +185,12 @@ const fetchYears = async () => {
   try {
     const response = await axios.get('http://localhost:5000/years')
     yearOptions.value = response.data
-    console.log('Available years:', yearOptions.value) // Debugging: log available years
+    console.log('Available years:', yearOptions.value)
   } catch (error) {
     console.error('Error fetching years:', error)
   }
 }
 
-// Fetch available years when the component is mounted
 onMounted(() => {
   fetchYears()
 })
@@ -186,7 +208,7 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
-  background-color:white;
+  background-color: white;
   padding: 20px;
   border-radius: 5px;
 }
@@ -331,4 +353,15 @@ ul {
 .expand-summary-button i {
   margin-right: 5px;
 }
+
+.alert-box {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  text-align: center;
+}
+
 </style>

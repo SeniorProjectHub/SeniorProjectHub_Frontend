@@ -34,7 +34,7 @@ const isAdminRoute = computed(() => {
 
 // Show root-related links when the current path is exactly "/" or matches certain paths
 const isRootRoute = computed(() => {
-  return ['/', '/search', '/question', '/list-view'].includes(route.path)
+  return ['/', '/search', '/question', '/list-view' ,'/information/:id'].includes(route.path)
 })
 </script>
 
