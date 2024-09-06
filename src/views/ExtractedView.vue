@@ -128,7 +128,7 @@ export default defineComponent({
 
     const confirmNotification = () => {
       showNotification.value = false
-      router.push({ name: 'list-view' })
+      router.push({ name: 'document-list' })
     }
 
     const showModal = () => {

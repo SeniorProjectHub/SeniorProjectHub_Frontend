@@ -16,7 +16,10 @@
     <div class="document-grid">
       <div v-for="info in sortedInformations" :key="info.id" class="document-item">
         <img src="@/assets/pdf.svg" alt="PDF Logo" class="pdf-logo" />
-        <router-link :to="`/information/${info.id}`" class="document-title">
+        <router-link
+          :to="generateDocumentLink(info.id)"
+          class="document-title"
+        >
           {{ info.title }}
         </router-link>
       </div>
@@ -29,12 +32,12 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 
 const informations = ref([])
 const selectedSort = ref('name-az')
 const error = ref(null)
-const router = useRouter()
+const route = useRoute()
 
 const fetchInformations = async () => {
   try {
@@ -66,6 +69,14 @@ const sortedInformations = computed(() => {
 
   return sorted
 })
+
+// Function to generate the document link based on the current route
+const generateDocumentLink = (id) => {
+  if (route.path.startsWith('/admin')) {
+    return `/admin/information/${id}`
+  }
+  return `/information/${id}`
+}
 
 onMounted(fetchInformations)
 </script>

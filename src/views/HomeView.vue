@@ -16,7 +16,9 @@ import { RouterLink, RouterView } from 'vue-router'
         </ul>
       </div>
       <div class="button-container">
-        <button class="ask-button">Ask Now</button>
+        <a href="/question">
+          <button class="ask-button">Ask Now</button>
+        </a>
       </div>
     </div>
   </main>

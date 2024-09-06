@@ -34,6 +34,13 @@ const router = createRouter({
       props: true
     },
     {
+      path: '/admin/information/:id',
+      name: 'admin-information',
+      component: InformationView,
+      props: true,
+      meta: { isAdmin: true } // Use meta to distinguish this route as admin
+    },
+    {
       path: '/information/:id/edit',
       name: 'information-edit',
       component: InformationEditView

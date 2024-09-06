@@ -1,9 +1,23 @@
 <template>
   <div class="information-details">
     <div class="button-container">
+      <!-- Always show the download button -->
       <button class="download-button" @click="downloadPDF">Download this file</button>
-      <button class="edit-button" @click="editInformation">Edit Detail</button>
-      <button class="delete-button" @click="showDeleteModal = true">Delete Document</button>
+      <!-- Conditionally show Edit and Delete buttons only if the route is admin/information/:id -->
+      <button
+        v-if="isAdminRoute"
+        class="edit-button"
+        @click="editInformation"
+      >
+        Edit Detail
+      </button>
+      <button
+        v-if="isAdminRoute"
+        class="delete-button"
+        @click="showDeleteModal = true"
+      >
+        Delete Document
+      </button>
     </div>
     <div v-if="information">
       <h2>{{ information.title }}</h2>
@@ -16,7 +30,7 @@
       </div>
       <!-- Display Public Date -->
       <p>
-        <strong>Public Date:</strong>
+        <strong>Publish Date:</strong>
         {{ information.time_stamp ? new Date(information.time_stamp).toLocaleString() : 'N/A' }}
         <strong>Last Update:</strong>
         {{ information.update_time ? new Date(information.update_time).toLocaleString() : 'N/A' }}
@@ -32,7 +46,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import DeleteConfirmationModal from './DeleteConfirmationModal.vue'
 
@@ -41,6 +55,9 @@ const router = useRouter()
 const information = ref(null)
 const error = ref(null)
 const showDeleteModal = ref(false)
+
+// Check if the route is admin/information/:id
+const isAdminRoute = computed(() => route.path.startsWith('/admin'))
 
 const fetchInformation = async () => {
   try {

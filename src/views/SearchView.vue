@@ -1,11 +1,13 @@
 <template>
   <div class="search-page">
+    <h2>Search Projects</h2>
     <header class="search-header">
       <input
         v-model="globalQuery"
         @input="onGlobalInputChange"
+        @keyup.enter="performGlobalSearch"
         type="text"
-        placeholder="Search by all"
+        placeholder="Search by Keyword"
         class="global-search-input"
         @keypress="validateInput"
       />
@@ -14,7 +16,6 @@
       </button>
     </header>
     <div class="browse-projects">
-      <h2>Browse Projects</h2>
       <div class="tabs">
         <button :class="{ active: searchBy === 'Title' }" @click="searchBy = 'Title'">
           By Title
@@ -28,6 +29,7 @@
         <input
           v-model="query"
           @input="onInputChange"
+          @keyup.enter="performSearch"
           type="text"
           :placeholder="'Search by ' + searchBy"
           class="search-input"
@@ -91,17 +93,19 @@ const results = ref<
   }>
 >([])
 const loading = ref(false)
-const searchBy = ref('title')
+const searchBy = ref('Title')
 const year = ref('')
 const yearOptions = ref<string[]>([])
 const expandedIndex = ref<number | null>(null)
 const searchPerformed = ref(false)
 const showAlert = ref(false)
+globalQuery.value = '' // Clear global query after search
+query.value = '' // Clear search query after search
 
 let debounceTimeout: ReturnType<typeof setTimeout> | null = null
 
 const validateInput = (event: KeyboardEvent) => {
-  const char = (event.target as HTMLInputElement).value + event.key;
+  const char = (event.target as HTMLInputElement).value + event.key
   // eslint-disable-next-line no-useless-escape
   const regex = /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/? ]*$/
 
@@ -136,9 +140,11 @@ const performGlobalSearch = async () => {
   searchPerformed.value = true
 
   try {
+    const tempGlobalQuery = globalQuery.value
+    globalQuery.value = ''
     const response = await axios.get('http://localhost:5000/semantic_search', {
       params: {
-        query: globalQuery.value
+        query: tempGlobalQuery
       }
     })
 
@@ -156,9 +162,12 @@ const performSearch = async () => {
   searchPerformed.value = true
 
   try {
+    const tempQuery = query.value
+    query.value = ''
+
     const response = await axios.get('http://localhost:5000/search', {
       params: {
-        query: query.value,
+        query: tempQuery,
         searchBy: searchBy.value,
         year: year.value
       }
@@ -203,6 +212,9 @@ onMounted(() => {
   padding: 20px;
   font-family: Arial, sans-serif;
 }
+.search-page h2 {
+  text-align: center;
+}
 
 .search-header {
   display: flex;
@@ -238,6 +250,7 @@ onMounted(() => {
 
 .browse-projects {
   margin-top: 20px;
+  /* border-top: solid whitesmoke; */
 }
 
 .tabs {
@@ -363,5 +376,4 @@ ul {
   border-radius: 4px;
   text-align: center;
 }
-
 </style>

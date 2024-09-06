@@ -441,6 +441,7 @@ export default defineComponent({
 .typing {
   display: flex;
   align-items: center;
+  margin-top: 1.5rem;
 }
 
 .typing .dot {

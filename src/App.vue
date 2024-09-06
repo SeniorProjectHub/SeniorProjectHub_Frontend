@@ -1,7 +1,8 @@
 <template>
   <header class="header">
     <div class="logo">
-      <RouterLink to="/">
+      <!-- Dynamically change the link destination based on whether it's an admin route -->
+      <RouterLink :to="logoLink">
         <img src="@/assets/logo.svg" alt="SeniorProjectHub Logo" />
       </RouterLink>
     </div>
@@ -29,15 +30,19 @@ const route = useRoute()
 
 // Show admin-related links when the current path starts with "/admin"
 const isAdminRoute = computed(() => {
-  return ['/admin', '/admin/upload', '/admin/list'].includes(route.path)
+  return ['/admin', '/admin/upload', '/admin/list', `/admin/information/${route.params.id}`].includes(route.path)
 })
 
 // Show root-related links when the current path is exactly "/" or matches certain paths
 const isRootRoute = computed(() => {
-  return ['/', '/search', '/question', '/list-view' ,'/information/:id'].includes(route.path)
+  return ['/', '/search', '/question', '/list-view' ,`/information/${route.params.id}`].includes(route.path)
+})
+
+// Dynamically change the logo link based on the route
+const logoLink = computed(() => {
+  return isAdminRoute.value ? '/admin' : '/'
 })
 </script>
-
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');

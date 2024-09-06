@@ -120,7 +120,7 @@ const showErrorNotification = (message) => {
 const confirmNotification = () => {
   showNotification.value = false
   if (isSuccess.value) {
-    router.push(`/information/${route.params.id}`)
+    router.push(`/admin/information/${route.params.id}`)
   }
 }
 
