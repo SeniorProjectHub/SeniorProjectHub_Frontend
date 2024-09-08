@@ -203,57 +203,41 @@ export default defineComponent({
 </script>
 
 <style scoped>
+
 .chatbot-container {
+  font-family: 'Inter', sans-serif;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
   height: 100vh;
-  font-family: 'Inter', sans-serif;
-  background-color: #ffffff;
-  padding: 20px;
-  box-sizing: border-box;
+  background-color: whitesmoke;
 }
 
 .chat-interface {
   display: flex;
   flex-direction: column;
-  width: 85%;
-  max-width: 1200px;
-  height: 100%;
-  margin: 0 auto;
-}
-
-/* Custom scrollbar for Webkit browsers */
-.chatbot-messages::-webkit-scrollbar {
-  width: 6px;
-}
-
-.chatbot-messages::-webkit-scrollbar-track {
-  background: #f1f3f5;
-  border-radius: 3px;
-}
-
-.chatbot-messages::-webkit-scrollbar-thumb {
-  background-color: #6c757d;
-  border-radius: 3px;
-  border: 1px solid #f1f3f5;
-}
-
-.chatbot-messages::-webkit-scrollbar-thumb:hover {
-  background-color: #495057;
+  width: 75%;
+  max-width: 900px;
+  height: 90vh;
+  background-color: #f9f9f9;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
 }
 
 .greeting-section {
   flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  justify-content: center; /* Centers vertically */
+  align-items: center; /* Centers horizontally */
   padding: 2rem;
   overflow-y: auto;
   width: 100%;
 }
-
 .greeting-header {
   display: flex;
   align-items: center;
@@ -261,19 +245,19 @@ export default defineComponent({
 }
 
 .logo {
-  width: 40px;
-  height: 40px;
-  margin-right: 0.5rem;
+  width: 50px;
+  height: 50px;
+  margin-right: 1rem;
 }
 
 .greeting-header h1 {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: bold;
 }
 
 .question-section h3 {
-  font-size: 1rem;
-  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
   text-align: center;
   color: #666;
 }
@@ -286,17 +270,19 @@ export default defineComponent({
 }
 
 .question-list li {
-  background-color: #f0f2f5;
-  padding: 0.8rem 1rem;
+  background-color: #ffffff;
+  padding: 1rem;
   margin-bottom: 0.5rem;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background-color 0.3s;
-  font-size: 0.9rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.3s, box-shadow 0.3s;
+  font-size: 1rem;
 }
 
 .question-list li:hover {
-  background-color: #e4e6e9;
+  background-color: #eaeaea;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .chatbox {
@@ -321,12 +307,10 @@ export default defineComponent({
 
 .bot-message {
   justify-content: flex-start;
-  
 }
 
 .user-message {
   justify-content: flex-end;
-  
 }
 
 .message-avatar {
@@ -342,21 +326,22 @@ export default defineComponent({
 }
 
 .message-content {
-  max-width: 70%;
-  padding: 0rem 0.8rem;
-  border-radius: 18px;
+  max-width: 65%;
+  padding: 0.8rem 1.2rem;
+  border-radius: 12px;
   background-color: white;
-  font-size: 0.9rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  font-size: 1rem;
 }
 
 .user-message .message-content {
-  background-color: whitesmoke;
+  background-color: #f0f0f0;
   color: black;
 }
 
 .references {
   margin-top: 0.5rem;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
 }
 
 .references h4 {
@@ -397,6 +382,7 @@ export default defineComponent({
   background-color: #f3f3f3;
   border-radius: 30px;
   padding: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .chatbot-input input {
@@ -434,6 +420,7 @@ export default defineComponent({
 .send-icon {
   font-size: 1.2rem;
 }
+
 .typing-indicator {
   align-self: flex-start;
 }
