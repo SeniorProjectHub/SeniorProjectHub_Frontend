@@ -5,12 +5,12 @@
       <input
         v-model="globalQuery"
         @input="onGlobalInputChange"
-        @keyup.enter="performGlobalSearch"
         type="text"
-        placeholder="Search by Keyword"
+        placeholder="Search by All"
         class="global-search-input"
         @keypress="validateInput"
       />
+
       <button @click="performGlobalSearch" class="global-search-button">
         <i class="fa fa-search"></i>
       </button>
@@ -141,7 +141,6 @@ const performGlobalSearch = async () => {
 
   try {
     const tempGlobalQuery = globalQuery.value
-    globalQuery.value = ''
     const response = await axios.get('http://localhost:5000/semantic_search', {
       params: {
         query: tempGlobalQuery
@@ -163,8 +162,6 @@ const performSearch = async () => {
 
   try {
     const tempQuery = query.value
-    query.value = ''
-
     const response = await axios.get('http://localhost:5000/search', {
       params: {
         query: tempQuery,

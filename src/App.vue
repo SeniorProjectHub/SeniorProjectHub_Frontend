@@ -10,7 +10,7 @@
       <RouterLink v-if="isAdminRoute" to="/admin/upload" class="nav-link">Upload</RouterLink>
       <RouterLink v-if="isAdminRoute" to="/admin/list" class="nav-link">Document List</RouterLink>
       <RouterLink v-if="isRootRoute" to="/list-view" class="nav-link">Document List</RouterLink>
-      <RouterLink v-if="isRootRoute" to="/search" class="nav-link">Search</RouterLink>
+      <RouterLink v-if="isRootRoute" to="/search" class="nav-link">Browse</RouterLink>
       <RouterLink v-if="isRootRoute" to="/question" class="nav-link">Q&A</RouterLink>
     </nav>
     <div class="user-profile">

@@ -29,7 +29,7 @@
               <img src="../assets/SeniorProjectHub_logo.svg" alt="Bot" class="bot-avatar" />
             </div>
             <div class="message-content">
-              <p>{{ message.text }}</p>
+              <p v-html="message.text"></p>
               <div v-if="message.references && message.references.length > 0" class="references">
                 <h4>Reference</h4>
                 <ul>
@@ -227,6 +227,25 @@ export default defineComponent({
   overflow: hidden;
   position: relative;
 }
+/* Custom scrollbar for Webkit browsers */
+.chatbot-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chatbot-messages::-webkit-scrollbar-track {
+  background: #f1f3f5;
+  border-radius: 3px;
+}
+
+.chatbot-messages::-webkit-scrollbar-thumb {
+  background-color: #6c757d;
+  border-radius: 3px;
+  border: 1px solid #f1f3f5;
+}
+
+.chatbot-messages::-webkit-scrollbar-thumb:hover {
+  background-color: #495057;
+}
 
 .greeting-section {
   flex: 1;
@@ -371,7 +390,7 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   padding: 0;
-  background-color: #fff;
+  background-color: #ffff;
   width: 100%;
 }
 
