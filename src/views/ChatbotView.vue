@@ -29,7 +29,7 @@
               <img src="../assets/SeniorProjectHub_logo.svg" alt="Bot" class="bot-avatar" />
             </div>
             <div class="message-content">
-              <p v-html="message.text"></p>
+              <p>{{ message.text }}</p>
               <div v-if="message.references && message.references.length > 0" class="references">
                 <h4>Reference</h4>
                 <ul>
@@ -134,6 +134,12 @@ export default defineComponent({
         showAlert.value = false
       }
     }
+    const escapeSpecialChars = (text: string) => {
+      return text
+        .replace(/\\/g, '\\\\')    // Escape backslashes
+        .replace(/\*/g, '\\*')     // Escape asterisks
+        .replace(/\//g, '\\/')     // Escape forward slashes
+    }
 
     const sendMessage = async (presetMessage = '') => {
       const messageText = presetMessage || userInput.value.trim()
@@ -143,7 +149,7 @@ export default defineComponent({
 
       const userMessage: Message = {
         id: Date.now(),
-        text: messageText,
+        text:escapeSpecialChars(messageText) ,
         isUser: true
       }
       messages.value.push(userMessage)
