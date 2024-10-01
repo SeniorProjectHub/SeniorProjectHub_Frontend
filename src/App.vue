@@ -12,8 +12,19 @@
       <RouterLink v-if="isRootRoute" to="/list-view" class="nav-link">Document List</RouterLink>
       <RouterLink v-if="isRootRoute" to="/search" class="nav-link">Browse</RouterLink>
       <RouterLink v-if="isRootRoute" to="/question" class="nav-link">Q&A</RouterLink>
+      <RouterLink v-if="isStudentRoute" to="/student/list-view" class="nav-link">Document List</RouterLink>
+      <RouterLink v-if="isStudentRoute" to="/student/search" class="nav-link">Browse</RouterLink>
+      <RouterLink v-if="isStudentRoute" to="/student/question" class="nav-link">Q&A</RouterLink>
     </nav>
-    <div class="user-profile">
+    <div class="user-profile" v-if="isRootRoute">
+      <button>Login</button>
+    </div>
+    <div class="user-profile" v-if="isAdminRoute">
+      <p>Admin</p>
+      <img src="@/assets/admin-icon.svg" alt="Admin Icon" />
+    </div>
+    <div class="user-profile" v-if="isStudentRoute">
+      <p>Student</p>
       <img src="@/assets/admin-icon.svg" alt="Admin Icon" />
     </div>
   </header>
@@ -37,11 +48,20 @@ const isAdminRoute = computed(() => {
 const isRootRoute = computed(() => {
   return ['/', '/search', '/question', '/list-view' ,`/information/${route.params.id}`].includes(route.path)
 })
+const isStudentRoute = computed(() => {
+  return ['/student', '/student/search', '/student/question', '/student/list-view' ,`/student/information/${route.params.id}`].includes(route.path)
+})
 
 // Dynamically change the logo link based on the route
 const logoLink = computed(() => {
-  return isAdminRoute.value ? '/admin' : '/'
-})
+  if (isAdminRoute.value) {
+    return '/admin';
+  } else if (isStudentRoute.value) {
+    return '/student';
+  } else {
+    return '/';
+  }
+});
 </script>
 
 <style scoped>

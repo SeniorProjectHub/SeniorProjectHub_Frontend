@@ -11,8 +11,12 @@
           <h3>Questions You Can Ask</h3>
           <ul class="question-list">
             <li @click="sendMessage('Who did the project BIRDER?')">Who did the project BIRDER?</li>
-            <li @click="sendMessage('What is the project GPT 4 Baker about?')">What is the project GPT 4 Baker about?</li>
-            <li @click="sendMessage('Which project involves using AI?')">Which project involves using AI?</li>
+            <li @click="sendMessage('What is the project GPT 4 Baker about?')">
+              What is the project GPT 4 Baker about?
+            </li>
+            <li @click="sendMessage('Which project involves using AI?')">
+              Which project involves using AI?
+            </li>
           </ul>
         </div>
       </div>
@@ -30,15 +34,26 @@
             </div>
             <div class="message-content">
               <p>{{ message.text }}</p>
-              <div v-if="message.references && message.references.length > 0" class="references">
-                <h4>Reference</h4>
-                <ul>
-                  <li v-for="ref in message.references" :key="ref._id">
-                    <a :href="`/information/${ref._id}`" target="_blank" rel="noopener noreferrer">
-                      {{ ref.title }}
-                    </a>
-                  </li>
-                </ul>
+
+              <!-- Conditional rendering for references based on route -->
+              <div v-if="route.path === '/student/question'">
+                <div v-if="message.references && message.references.length > 0" class="references">
+                  <h4>Reference</h4>
+                  <ul>
+                    <li v-for="ref in message.references" :key="ref._id">
+                      <a
+                        :href="`/information/${ref._id}`"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {{ ref.title }}
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div v-else-if="route.path === '/question'">
+                <p>You need to log in to view references.</p>
               </div>
             </div>
           </div>
@@ -76,9 +91,7 @@
       </div>
 
       <!-- Alert box for non-English input -->
-      <div v-if="showAlert" class="alert-box">
-        Only English characters are allowed.
-      </div>
+      <div v-if="showAlert" class="alert-box">Only English characters are allowed.</div>
     </div>
   </div>
 </template>
@@ -86,6 +99,7 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted, nextTick } from 'vue'
 import axios from 'axios'
+import { useRoute } from 'vue-router'
 
 interface Reference {
   _id: string
@@ -108,6 +122,9 @@ export default defineComponent({
     const isChatStarted = ref(false)
     const showAlert = ref(false)
 
+    // Get the current route
+    const route = useRoute()
+
     const scrollToBottom = () => {
       nextTick(() => {
         if (messagesContainer.value) {
@@ -120,12 +137,12 @@ export default defineComponent({
       const input = (event.target as HTMLInputElement).value
       // eslint-disable-next-line no-useless-escape
       const validInputRegex = /^[A-Za-z0-9\s!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]*$/
-      
+
       if (!validInputRegex.test(input)) {
         showAlert.value = true
         // eslint-disable-next-line no-control-regex
         userInput.value = userInput.value.replace(/[^\x00-\x7F]/g, '')
-        
+
         // Hide the alert after 3 seconds
         setTimeout(() => {
           showAlert.value = false
@@ -134,11 +151,12 @@ export default defineComponent({
         showAlert.value = false
       }
     }
+
     const escapeSpecialChars = (text: string) => {
       return text
-        .replace(/\\/g, '\\\\')    // Escape backslashes
-        .replace(/\*/g, '\\*')     // Escape asterisks
-        .replace(/\//g, '\\/')     // Escape forward slashes
+        .replace(/\\/g, '\\\\') // Escape backslashes
+        .replace(/\*/g, '\\*') // Escape asterisks
+        .replace(/\//g, '\\/') // Escape forward slashes
     }
 
     const sendMessage = async (presetMessage = '') => {
@@ -149,7 +167,7 @@ export default defineComponent({
 
       const userMessage: Message = {
         id: Date.now(),
-        text:escapeSpecialChars(messageText) ,
+        text: escapeSpecialChars(messageText),
         isUser: true
       }
       messages.value.push(userMessage)
@@ -202,14 +220,14 @@ export default defineComponent({
       isTyping,
       isChatStarted,
       validateInput,
-      showAlert
+      showAlert,
+      route // Make the route available in the template
     }
   }
 })
 </script>
 
 <style scoped>
-
 .chatbot-container {
   font-family: 'Inter', sans-serif;
   display: flex;
@@ -301,7 +319,9 @@ export default defineComponent({
   border-radius: 10px;
   cursor: pointer;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  transition: background-color 0.3s, box-shadow 0.3s;
+  transition:
+    background-color 0.3s,
+    box-shadow 0.3s;
   font-size: 1rem;
 }
 
@@ -480,12 +500,25 @@ export default defineComponent({
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translate(-50%, 20px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }
 
 @keyframes typingAnimation {
-  0%, 100% { transform: scale(1); opacity: 0.7; }
-  50% { transform: scale(1.2); opacity: 1; }
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
 }
 </style>

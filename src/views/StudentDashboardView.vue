@@ -5,7 +5,7 @@ import { RouterLink, RouterView } from 'vue-router'
 <template>
   <main class="main-content">
     <div class="welcome-message">
-      <h1>Hi, There!</h1>
+      <h1>Hi, Student</h1>
       <h2>Welcome To SeniorProjectHub</h2>
       <h3>What Can You Do With SeniorProjectHub?</h3>
       <div class="features">
@@ -16,7 +16,7 @@ import { RouterLink, RouterView } from 'vue-router'
         </ul>
       </div>
       <div class="button-container">
-        <a href="/question">
+        <a href="/student/question">
           <button class="ask-button">Ask Now</button>
         </a>
       </div>

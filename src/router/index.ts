@@ -8,6 +8,8 @@ import ExtractedView from '../views/ExtractedView.vue'
 import SearchView from '../views/SearchView.vue'
 import ChatbotView from '../views/ChatbotView.vue'
 import AdminView from '../views/AdminDashboardView.vue'
+import LoginView from '../views/LoginView.vue'
+import StudentView from '../views/StudentDashboardView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,6 +18,37 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: LoginView
+    },
+    {
+      path: '/student',
+      name: 'student-dashboard',
+      component: StudentView
+    },
+    {
+      path: '/student/list-view',
+      name: 'student-document-list',
+      component: ListView
+    },
+    {
+      path: '/student/search',
+      name: 'student-search',
+      component: SearchView
+    },
+    {
+      path: '/student/question',
+      name: 'student-qa',
+      component: ChatbotView
+    },
+    {
+      path: '/student/information/:id',
+      name: 'student-document-information',
+      component: InformationView,
+      props: true
     },
     {
       path: '/admin',
