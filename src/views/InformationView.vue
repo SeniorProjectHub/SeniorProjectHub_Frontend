@@ -1,24 +1,20 @@
 <template>
   <div class="information-details">
     <div class="button-container">
-      <!-- Always show the download button -->
-      <button class="download-button" @click="downloadPDF">Download this file</button>
-      <!-- Conditionally show Edit and Delete buttons only if the route is admin/information/:id -->
-      <button
-        v-if="isAdminRoute"
-        class="edit-button"
-        @click="editInformation"
-      >
-        Edit Detail
+      <!-- Conditionally show the Download button for admin or student -->
+      <button v-if="isAdminRoute || isStudentRoute" class="download-button" @click="downloadPDF">
+        Download this file
       </button>
-      <button
-        v-if="isAdminRoute"
-        class="delete-button"
-        @click="showDeleteModal = true"
-      >
+      <!-- Show login prompt for other users -->
+      <p v-else>You need to log in to download this file.</p>
+
+      <!-- Conditionally show Edit and Delete buttons only if the route is admin/information/:id -->
+      <button v-if="isAdminRoute" class="edit-button" @click="editInformation">Edit Detail</button>
+      <button v-if="isAdminRoute" class="delete-button" @click="showDeleteModal = true">
         Delete Document
       </button>
     </div>
+
     <div v-if="information">
       <h2>{{ information.title }}</h2>
       <p>{{ information.authors.join(', ') }}</p>
@@ -28,6 +24,7 @@
         <strong>Brief summary</strong>
         <p>{{ information.summary }}</p>
       </div>
+
       <!-- Display Public Date -->
       <p>
         <strong>Publish Date:</strong>
@@ -36,7 +33,9 @@
         {{ information.update_time ? new Date(information.update_time).toLocaleString() : 'N/A' }}
       </p>
     </div>
+
     <div v-if="error" class="error">{{ error }}</div>
+
     <DeleteConfirmationModal
       :show="showDeleteModal"
       @delete="deleteInformation"
@@ -59,6 +58,10 @@ const showDeleteModal = ref(false)
 // Check if the route is admin/information/:id
 const isAdminRoute = computed(() => route.path.startsWith('/admin'))
 
+// Check if the route is student/information/:id
+const isStudentRoute = computed(() => route.path.startsWith('/student'))
+
+// Fetch information from the API
 const fetchInformation = async () => {
   try {
     const response = await fetch(`/api/information/${route.params.id}`)
@@ -69,10 +72,12 @@ const fetchInformation = async () => {
   }
 }
 
+// Edit information
 const editInformation = () => {
   router.push(`/information/${route.params.id}/edit`)
 }
 
+// Delete information
 const deleteInformation = async () => {
   try {
     const response = await fetch(`/api/information/${route.params.id}`, { method: 'DELETE' })
@@ -84,11 +89,10 @@ const deleteInformation = async () => {
   showDeleteModal.value = false
 }
 
+// Download PDF
 const downloadPDF = async () => {
   try {
-    const response = await fetch(`/api/download/${route.params.id}`, {
-      method: 'GET'
-    })
+    const response = await fetch(`/api/download/${route.params.id}`, { method: 'GET' })
     if (!response.ok) throw new Error(await response.text())
 
     // Simulated PDF download logic

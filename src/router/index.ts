@@ -10,6 +10,7 @@ import ChatbotView from '../views/ChatbotView.vue'
 import AdminView from '../views/AdminDashboardView.vue'
 import LoginView from '../views/LoginView.vue'
 import StudentView from '../views/StudentDashboardView.vue'
+import CallbackPage from '../views/CallBackPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -102,7 +103,12 @@ const router = createRouter({
       path: '/question',
       name: 'question',
       component: ChatbotView
-    }
+    },
+    {
+      path: '/oauth/callback',
+      name: 'OAuthCallback',
+      component: CallbackPage
+  }
   ]
 })
 

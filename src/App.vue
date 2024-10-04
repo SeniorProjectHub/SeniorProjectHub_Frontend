@@ -12,12 +12,16 @@
       <RouterLink v-if="isRootRoute" to="/list-view" class="nav-link">Document List</RouterLink>
       <RouterLink v-if="isRootRoute" to="/search" class="nav-link">Browse</RouterLink>
       <RouterLink v-if="isRootRoute" to="/question" class="nav-link">Q&A</RouterLink>
-      <RouterLink v-if="isStudentRoute" to="/student/list-view" class="nav-link">Document List</RouterLink>
+      <RouterLink v-if="isStudentRoute" to="/student/list-view" class="nav-link"
+        >Document List</RouterLink
+      >
       <RouterLink v-if="isStudentRoute" to="/student/search" class="nav-link">Browse</RouterLink>
       <RouterLink v-if="isStudentRoute" to="/student/question" class="nav-link">Q&A</RouterLink>
     </nav>
     <div class="user-profile" v-if="isRootRoute">
-      <button>Login</button>
+      <a href="login">
+        <button>Login</button>
+      </a>
     </div>
     <div class="user-profile" v-if="isAdminRoute">
       <p>Admin</p>
@@ -41,27 +45,40 @@ const route = useRoute()
 
 // Show admin-related links when the current path starts with "/admin"
 const isAdminRoute = computed(() => {
-  return ['/admin', '/admin/upload', '/admin/list', `/admin/information/${route.params.id}`].includes(route.path)
+  return [
+    '/admin',
+    '/admin/upload',
+    '/admin/list',
+    `/admin/information/${route.params.id}`
+  ].includes(route.path)
 })
 
 // Show root-related links when the current path is exactly "/" or matches certain paths
 const isRootRoute = computed(() => {
-  return ['/', '/search', '/question', '/list-view' ,`/information/${route.params.id}`].includes(route.path)
+  return ['/', '/search', '/question', '/list-view', `/information/${route.params.id}`].includes(
+    route.path
+  )
 })
 const isStudentRoute = computed(() => {
-  return ['/student', '/student/search', '/student/question', '/student/list-view' ,`/student/information/${route.params.id}`].includes(route.path)
+  return [
+    '/student',
+    '/student/search',
+    '/student/question',
+    '/student/list-view',
+    `/student/information/${route.params.id}`
+  ].includes(route.path)
 })
 
 // Dynamically change the logo link based on the route
 const logoLink = computed(() => {
   if (isAdminRoute.value) {
-    return '/admin';
+    return '/admin'
   } else if (isStudentRoute.value) {
-    return '/student';
+    return '/student'
   } else {
-    return '/';
+    return '/'
   }
-});
+})
 </script>
 
 <style scoped>

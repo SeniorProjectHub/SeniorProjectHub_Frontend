@@ -52,9 +52,7 @@
                   </ul>
                 </div>
               </div>
-              <div v-else-if="route.path === '/question'">
-                <p>You need to log in to view references.</p>
-              </div>
+              
             </div>
           </div>
 
