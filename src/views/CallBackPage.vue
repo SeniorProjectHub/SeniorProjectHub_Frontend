@@ -1,46 +1,39 @@
 <template>
   <div>
-    <h1>OAuth Callback</h1>
-    <p>Code: {{ code }}</p>
-    <p>Role: {{ role }}</p>
+    <h2>Processing Login...</h2>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import axios from 'axios'
+<script setup lang="ts">
+import { onMounted } from 'vue';
+import axios from 'axios';
+import { useRouter } from 'vue-router';
 
-export default defineComponent({
-  setup() {
-    const route = useRoute()
-    const code = route.query.code
-    const role = route.query.role
+const router = useRouter();
 
-    onMounted(() => {
-      // Send the code and role to the backend to complete authentication
-      axios
-        .post('http://localhost:5000/oauth/complete', {
-          code: code,
-          role: role
-        })
-        // In the success handler:
-        .then((response) => {
-          console.log('Authentication successful:', response.data)
-          // Redirect based on role
-          if (response.data.role === 'student') {
-            window.location.href = '/student'
-          } else if (response.data.role === 'admin') {
-            window.location.href = '/admin'
-          }
-        })
+onMounted(async () => {
+  const query = new URLSearchParams(window.location.search);
+  const code = query.get('code');
 
-        .catch((error) => {
-          console.error('Error completing OAuth:', error)
-        })
-    })
+  if (code) {
+    try {
+      const tokenResponse = await axios.post('http://127.0.0.1:5000/proxy/token', { code });
 
-    return { code, role }
+      if (tokenResponse.status === 200) {
+        const accessToken = tokenResponse.data.access_token;
+        localStorage.setItem('access_token', accessToken); // Store the token in localStorage
+        router.push('/profile'); // Redirect to the profile page
+      } else {
+        console.error('Login failed with status:', tokenResponse.status);
+        router.push('/login-failed');
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      router.push('/login-failed');
+    }
+  } else {
+    console.error('Missing authorization code');
+    router.push('/login-failed');
   }
-})
+});
 </script>

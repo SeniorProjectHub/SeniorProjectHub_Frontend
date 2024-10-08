@@ -1,5 +1,5 @@
 <template>
-  <header class="header">
+  <header class="header" v-if="!isLoginRoute">
     <div class="logo">
       <!-- Dynamically change the link destination based on whether it's an admin route -->
       <RouterLink :to="logoLink">
@@ -12,9 +12,7 @@
       <RouterLink v-if="isRootRoute" to="/list-view" class="nav-link">Document List</RouterLink>
       <RouterLink v-if="isRootRoute" to="/search" class="nav-link">Browse</RouterLink>
       <RouterLink v-if="isRootRoute" to="/question" class="nav-link">Q&A</RouterLink>
-      <RouterLink v-if="isStudentRoute" to="/student/list-view" class="nav-link"
-        >Document List</RouterLink
-      >
+      <RouterLink v-if="isStudentRoute" to="/student/list-view" class="nav-link">Document List</RouterLink>
       <RouterLink v-if="isStudentRoute" to="/student/search" class="nav-link">Browse</RouterLink>
       <RouterLink v-if="isStudentRoute" to="/student/question" class="nav-link">Q&A</RouterLink>
     </nav>
@@ -68,6 +66,9 @@ const isStudentRoute = computed(() => {
     `/student/information/${route.params.id}`
   ].includes(route.path)
 })
+
+// Check if the current route is the login route
+const isLoginRoute = computed(() => route.path === '/login')
 
 // Dynamically change the logo link based on the route
 const logoLink = computed(() => {
