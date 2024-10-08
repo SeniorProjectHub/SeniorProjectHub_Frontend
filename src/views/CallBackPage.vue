@@ -21,8 +21,25 @@ onMounted(async () => {
 
       if (tokenResponse.status === 200) {
         const accessToken = tokenResponse.data.access_token;
-        localStorage.setItem('access_token', accessToken); // Store the token in localStorage
-        router.push('/profile'); // Redirect to the profile page
+        localStorage.setItem('access_token', accessToken);
+
+        // Fetch user role from the backend
+        const roleResponse = await axios.post('http://127.0.0.1:5000/get_user_role', { access_token: accessToken });
+
+        if (roleResponse.status === 200) {
+          const userRole = roleResponse.data.role;
+          localStorage.setItem('user_role', userRole);
+
+          // Redirect based on the user role
+          if (userRole === 'admin') {
+            router.push('/admin');
+          } else {
+            router.push('/student');
+          }
+        } else {
+          console.error('Role not found:', roleResponse.data.error);
+          router.push('/login-failed');
+        }
       } else {
         console.error('Login failed with status:', tokenResponse.status);
         router.push('/login-failed');
@@ -37,3 +54,5 @@ onMounted(async () => {
   }
 });
 </script>
+
+

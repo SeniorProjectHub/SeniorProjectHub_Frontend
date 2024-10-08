@@ -56,7 +56,7 @@
         <ul v-else>
           <li v-for="(result, index) in results" :key="index" class="result-item">
             <h3 class="result-title">
-              <router-link :to="`/information/${result._id}`">{{ result.title }}</router-link>
+              <router-link :to="generateDocumentLink(result._id)">{{ result.title }}</router-link>
             </h3>
             <p class="result-authors">Student: {{ result.authors.join(', ') }}</p>
             <p class="result-advisor">Advisor: {{ result.advisor }}</p>
@@ -78,7 +78,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const globalQuery = ref('')
 const query = ref('')
 const results = ref<
@@ -99,6 +101,7 @@ const yearOptions = ref<string[]>([])
 const expandedIndex = ref<number | null>(null)
 const searchPerformed = ref(false)
 const showAlert = ref(false)
+
 globalQuery.value = '' // Clear global query after search
 query.value = '' // Clear search query after search
 
@@ -195,6 +198,13 @@ const fetchYears = async () => {
   } catch (error) {
     console.error('Error fetching years:', error)
   }
+}
+
+const generateDocumentLink = (id: string) => {
+  if (route.path.startsWith('/student')) {
+    return `/student/information/${id}`
+  }
+  return `/information/${id}`
 }
 
 onMounted(() => {

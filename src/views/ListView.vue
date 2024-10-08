@@ -75,7 +75,10 @@ const generateDocumentLink = (id) => {
   if (route.path.startsWith('/admin')) {
     return `/admin/information/${id}`
   }
-  return `/information/${id}`
+  else if(route.path.startsWith('/student')){
+    return `/student/information/${id}`
+  }return `/information/${id}`
+  
 }
 
 onMounted(fetchInformations)

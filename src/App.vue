@@ -1,7 +1,6 @@
 <template>
   <header class="header" v-if="!isLoginRoute">
     <div class="logo">
-      <!-- Dynamically change the link destination based on whether it's an admin route -->
       <RouterLink :to="logoLink">
         <img src="@/assets/logo.svg" alt="SeniorProjectHub Logo" />
       </RouterLink>
@@ -12,22 +11,17 @@
       <RouterLink v-if="isRootRoute" to="/list-view" class="nav-link">Document List</RouterLink>
       <RouterLink v-if="isRootRoute" to="/search" class="nav-link">Browse</RouterLink>
       <RouterLink v-if="isRootRoute" to="/question" class="nav-link">Q&A</RouterLink>
-      <RouterLink v-if="isStudentRoute" to="/student/list-view" class="nav-link">Document List</RouterLink>
+      <RouterLink v-if="isStudentRoute" to="/student/list-view" class="nav-link"
+        >Document List</RouterLink
+      >
       <RouterLink v-if="isStudentRoute" to="/student/search" class="nav-link">Browse</RouterLink>
       <RouterLink v-if="isStudentRoute" to="/student/question" class="nav-link">Q&A</RouterLink>
     </nav>
-    <div class="user-profile" v-if="isRootRoute">
-      <a href="login">
+    <div class="user-profile">
+      <button v-if="isLoggedIn" @click="logout">Logout</button>
+      <a v-else href="login">
         <button>Login</button>
       </a>
-    </div>
-    <div class="user-profile" v-if="isAdminRoute">
-      <p>Admin</p>
-      <img src="@/assets/admin-icon.svg" alt="Admin Icon" />
-    </div>
-    <div class="user-profile" v-if="isStudentRoute">
-      <p>Student</p>
-      <img src="@/assets/admin-icon.svg" alt="Admin Icon" />
     </div>
   </header>
   <div class="container">
@@ -36,10 +30,25 @@
 </template>
 
 <script setup lang="ts">
-import { RouterLink, useRoute } from 'vue-router'
-import { computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
+const router = useRouter()
+
+const token = ref(localStorage.getItem('access_token'));
+const isLoggedIn = ref(!!token.value)
+
+// Retrieve token when component is mounted
+onMounted(() => {
+  if (!isLoggedIn.value) {
+    // Maybe fetch the token again if needed or refresh the page
+    token.value = localStorage.getItem('access_token')
+    isLoggedIn.value = !!token.value
+  }
+});
+
+console.log('Token:', token.value);
 
 // Show admin-related links when the current path starts with "/admin"
 const isAdminRoute = computed(() => {
@@ -80,6 +89,13 @@ const logoLink = computed(() => {
     return '/'
   }
 })
+
+// Logout function
+const logout = () => {
+  localStorage.removeItem('access_token')
+  token.value = null
+  router.push('/')
+}
 </script>
 
 <style scoped>

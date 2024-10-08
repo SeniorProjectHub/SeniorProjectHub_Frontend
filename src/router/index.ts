@@ -12,7 +12,7 @@ import LoginView from '../views/LoginView.vue'
 import StudentView from '../views/StudentDashboardView.vue'
 import CallbackPage from '../views/CallBackPage.vue'
 import ProfilePage from '../views/UserProfile.vue'
-import path from 'path'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,33 +30,39 @@ const router = createRouter({
     {
       path: '/student',
       name: 'student-dashboard',
-      component: StudentView
+      component: StudentView,
+      meta: { isStudent: true }
     },
     {
       path: '/student/list-view',
       name: 'student-document-list',
-      component: ListView
+      component: ListView,
+      meta: { isStudent: true }
     },
     {
       path: '/student/search',
       name: 'student-search',
-      component: SearchView
+      component: SearchView,
+      meta: { isStudent: true }
     },
     {
       path: '/student/question',
       name: 'student-qa',
-      component: ChatbotView
+      component: ChatbotView,
+      meta: { isStudent: true }
     },
     {
       path: '/student/information/:id',
       name: 'student-document-information',
       component: InformationView,
-      props: true
+      props: true,
+      meta: { isStudent: true }
     },
     {
       path: '/admin',
       name: 'admin-dashboard',
-      component: AdminView
+      component: AdminView,
+      meta: { isAdmin: true }
     },
     {
       path: '/list-view',
@@ -84,12 +90,14 @@ const router = createRouter({
     {
       path: '/admin/upload',
       name: 'upload-document',
-      component: UploadView
+      component: UploadView,
+      meta: { isAdmin: true }
     },
     {
       path: '/admin/list',
       name: 'document-list',
-      component: ListView
+      component: ListView,
+      meta: { isAdmin: true }
     },
     {
       path: '/extracted-data',
@@ -116,5 +124,44 @@ const router = createRouter({
    component: ProfilePage  }
   ]
 })
+
+router.beforeEach((to, from, next) => {
+  const userRole = localStorage.getItem('user_role');
+  const isAuthenticated = !!localStorage.getItem('access_token'); // Check if the user is logged in
+
+  // Define routes restricted for logged-in users
+  const restrictedRoutes = ['/', '/search', '/question', '/list-view', `/information/:id`];
+
+  if (restrictedRoutes.includes(to.path) || to.name === 'information') {
+    if (isAuthenticated) {
+      if (userRole === 'admin') {
+        return next('/admin');
+      } else if (userRole === 'student') {
+        return next('/student');
+      }
+    }
+  }
+
+  // Check if the route is admin-only and user is not admin
+  if (to.matched.some(record => record.meta.isAdmin) && userRole !== 'admin') {
+    if (userRole === 'student') {
+      return next('/student');
+    } else {
+      return next('/');
+    }
+  }
+
+  // Check if the route is student-only and user is not student
+  if (to.matched.some(record => record.meta.isStudent) && userRole !== 'student') {
+    if (userRole === 'admin') {
+      return next('/admin');
+    } else {
+      return next('/');
+    }
+  }
+
+  next(); // Proceed if no restrictions
+});
+
 
 export default router
