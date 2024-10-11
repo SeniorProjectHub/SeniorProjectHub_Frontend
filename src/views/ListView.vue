@@ -52,11 +52,11 @@ const fetchInformations = async () => {
   }
 }
 
-// Computed property to sort the documents
+
 const sortedInformations = computed(() => {
   let sorted = informations.value
 
-  // Sort by the selected criteria
+  
   if (selectedSort.value === 'latest') {
     sorted = sorted.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
   } else if (selectedSort.value === 'year') {
@@ -70,7 +70,7 @@ const sortedInformations = computed(() => {
   return sorted
 })
 
-// Function to generate the document link based on the current route
+
 const generateDocumentLink = (id) => {
   if (route.path.startsWith('/admin')) {
     return `/admin/information/${id}`

@@ -119,8 +119,6 @@ export default defineComponent({
     const isTyping = ref(false)
     const isChatStarted = ref(false)
     const showAlert = ref(false)
-
-    // Get the current route
     const route = useRoute()
 
     const scrollToBottom = () => {
@@ -140,8 +138,6 @@ export default defineComponent({
         showAlert.value = true
         // eslint-disable-next-line no-control-regex
         userInput.value = userInput.value.replace(/[^\x00-\x7F]/g, '')
-
-        // Hide the alert after 3 seconds
         setTimeout(() => {
           showAlert.value = false
         }, 3000)
@@ -219,7 +215,7 @@ export default defineComponent({
       isChatStarted,
       validateInput,
       showAlert,
-      route // Make the route available in the template
+      route 
     }
   }
 })
@@ -273,8 +269,8 @@ export default defineComponent({
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Centers vertically */
-  align-items: center; /* Centers horizontally */
+  justify-content: center; 
+  align-items: center; 
   padding: 2rem;
   overflow-y: auto;
   width: 100%;

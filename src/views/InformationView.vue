@@ -1,14 +1,10 @@
 <template>
   <div class="information-details">
     <div class="button-container">
-      <!-- Conditionally show the Download button for admin or student -->
       <button v-if="isAdminRoute || isStudentRoute" class="download-button" @click="downloadPDF">
         Download this file
       </button>
-      <!-- Show login prompt for other users -->
       <p v-else>You need to log in to download this file.</p>
-
-      <!-- Conditionally show Edit and Delete buttons only if the route is admin/information/:id -->
       <button v-if="isAdminRoute" class="edit-button" @click="editInformation">Edit Detail</button>
       <button v-if="isAdminRoute" class="delete-button" @click="showDeleteModal = true">
         Delete Document
@@ -55,13 +51,13 @@ const information = ref(null)
 const error = ref(null)
 const showDeleteModal = ref(false)
 
-// Check if the route is admin/information/:id
+
 const isAdminRoute = computed(() => route.path.startsWith('/admin'))
 
-// Check if the route is student/information/:id
+
 const isStudentRoute = computed(() => route.path.startsWith('/student'))
 
-// Fetch information from the API
+
 const fetchInformation = async () => {
   try {
     const response = await fetch(`/api/information/${route.params.id}`)
@@ -82,7 +78,7 @@ const deleteInformation = async () => {
   try {
     const response = await fetch(`/api/information/${route.params.id}`, { method: 'DELETE' })
     if (!response.ok) throw new Error(await response.text())
-    router.push('/list-view') // Redirect to the list view after deletion
+    router.push('/list-view') 
   } catch (err) {
     error.value = err.message
   }

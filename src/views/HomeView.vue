@@ -38,7 +38,7 @@ import { RouterLink, RouterView } from 'vue-router'
   display: flex;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 60px); /* Subtract header height */
+  height: calc(100vh - 60px); 
   background: linear-gradient(
     73.26deg,
     #070537 0.87%,
@@ -54,12 +54,12 @@ import { RouterLink, RouterView } from 'vue-router'
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: flex-start; /* Align text to the left */
+  align-items: flex-start; 
   padding: 20px;
   gap: 20px;
   position: relative;
-  width: 700px; /* Adjusted width */
-  text-align: left; /* Align all text to the left */
+  width: 700px; 
+  text-align: left; 
 }
 
 .welcome-message h1,
@@ -88,8 +88,8 @@ import { RouterLink, RouterView } from 'vue-router'
 }
 
 .features ul {
-  list-style-type: disc; /* Add bullet points */
-  padding-left: 20px; /* Add padding to the left for bullets */
+  list-style-type: disc; 
+  padding-left: 20px; 
   font-size: 18px;
   line-height: 1.5;
   color: #ffffff;
@@ -102,7 +102,7 @@ import { RouterLink, RouterView } from 'vue-router'
 .button-container {
   width: 100%;
   display: flex;
-  justify-content: center; /* Center the button horizontally */
+  justify-content: center; 
 }
 
 .ask-button {

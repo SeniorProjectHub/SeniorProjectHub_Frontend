@@ -102,8 +102,8 @@ const expandedIndex = ref<number | null>(null)
 const searchPerformed = ref(false)
 const showAlert = ref(false)
 
-globalQuery.value = '' // Clear global query after search
-query.value = '' // Clear search query after search
+globalQuery.value = '' 
+query.value = '' 
 
 let debounceTimeout: ReturnType<typeof setTimeout> | null = null
 

@@ -22,7 +22,7 @@ import { RouterLink, RouterView } from 'vue-router'
   display: flex;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 60px); /* Subtract header height */
+  height: calc(100vh - 60px); 
   background: linear-gradient(
     73.26deg,
     #070537 0.87%,
@@ -32,14 +32,14 @@ import { RouterLink, RouterView } from 'vue-router'
     #a8eb12 129.03%
   );
   color: white;
-  text-align: left; /* Align text to the left */
+  text-align: left; 
 }
 
 .welcome-message {
   display: flex;
-  flex-direction: column; /* Stack text vertically */
+  flex-direction: column; 
   justify-content: center;
-  align-items: flex-start; /* Align items to the left */
+  align-items: flex-start; 
   padding: 10px;
   gap: 10px;
   position: absolute;
@@ -52,7 +52,7 @@ import { RouterLink, RouterView } from 'vue-router'
 .welcome-message h1,
 .welcome-message h2 {
   font-family: 'Inter';
-  color: white; /* Ensure text is visible on the gradient */
+  color: white; 
 }
 
 .welcome-message h1 {
@@ -63,7 +63,7 @@ import { RouterLink, RouterView } from 'vue-router'
 
 .welcome-message h2 {
   font-weight: 400;
-  font-size: 24px; /* Adjust font size as needed */
-  line-height: 32px; /* Adjust line height as needed */
+  font-size: 24px; 
+  line-height: 32px; 
 }
 </style>

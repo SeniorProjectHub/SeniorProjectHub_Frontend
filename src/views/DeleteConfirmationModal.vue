@@ -58,7 +58,7 @@ const onCancel = () => {
 .button-container {
   display: flex;
   justify-content: center;
-  gap: 5px; /* Reduce gap to make buttons closer */
+  gap: 5px; 
   margin-top: 20px;
 }
 

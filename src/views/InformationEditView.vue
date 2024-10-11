@@ -58,7 +58,7 @@ const information = ref({
 })
 const showNotification = ref(false)
 const notificationMessage = ref('')
-const isSuccess = ref(false) // Track if the notification is for success
+const isSuccess = ref(false) 
 
 const fetchInformation = async () => {
   try {
@@ -188,8 +188,8 @@ h1 {
 }
 
 .form-group textarea {
-  resize: none; /* Prevent manual resizing */
-  overflow: hidden; /* Hide overflow content */
+  resize: none; 
+  overflow: hidden; 
   min-height: 100px;
 }
 

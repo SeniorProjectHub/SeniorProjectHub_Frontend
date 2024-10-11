@@ -39,10 +39,8 @@ const router = useRouter()
 const token = ref(localStorage.getItem('access_token'));
 const isLoggedIn = ref(!!token.value)
 
-// Retrieve token when component is mounted
 onMounted(() => {
   if (!isLoggedIn.value) {
-    // Maybe fetch the token again if needed or refresh the page
     token.value = localStorage.getItem('access_token')
     isLoggedIn.value = !!token.value
   }
@@ -50,7 +48,6 @@ onMounted(() => {
 
 console.log('Token:', token.value);
 
-// Show admin-related links when the current path starts with "/admin"
 const isAdminRoute = computed(() => {
   return [
     '/admin',
@@ -60,7 +57,6 @@ const isAdminRoute = computed(() => {
   ].includes(route.path)
 })
 
-// Show root-related links when the current path is exactly "/" or matches certain paths
 const isRootRoute = computed(() => {
   return ['/', '/search', '/question', '/list-view', `/information/${route.params.id}`].includes(
     route.path

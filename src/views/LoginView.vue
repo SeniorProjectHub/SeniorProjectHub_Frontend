@@ -22,7 +22,6 @@ const login = () => {
   // Construct the authorization URL
   const authUrl = `${authorizationUrl}?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=cmuitaccount.basicinfo`;
 
-  // Log details for debugging
   console.log('Authorization URL:', authorizationUrl);
   console.log('Client ID:', clientId);
   console.log('Redirect URI:', redirectUri);
@@ -32,11 +31,6 @@ const login = () => {
   window.location.href = authUrl;
 }
 </script>
-
-<style scoped>
-/* Styling remains the same */
-</style>
-
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');

@@ -94,10 +94,7 @@ export default defineComponent({
     const handleSaveAll = async () => {
       isLoading.value = true
       try {
-        // Filter only the data with status 'uploaded'
         const filteredData = uploadedData.value.filter((data) => data.status === 'uploaded')
-
-        // Proceed only if there's data to save
         if (filteredData.length > 0) {
           const response = await fetch('http://localhost:5000/save', {
             method: 'POST',
