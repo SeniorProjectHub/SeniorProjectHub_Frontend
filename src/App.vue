@@ -20,7 +20,7 @@
     <div class="user-profile">
       <a v-if="isLoggedIn">
         <div class="dropdown">
-          <p>{{ userRole }}</p>
+          <p class="username" >{{ userRole }}</p>
           <img
             src="/src/assets/profile_icon.png"
             alt="Profile Icon"
@@ -56,7 +56,7 @@ const token = ref(localStorage.getItem('access_token'))
 // Computed property to determine if the user is logged in
 const isLoggedIn = computed(() => !!token.value)
 
-const userName = ref('John Doe');  // You can replace this with actual name fetching
+const userName = ref(localStorage.getItem('user_name'));  
 const userRole = ref(localStorage.getItem('user_role') || 'Guest'); 
 
 const showDropdown = ref(false);
@@ -169,7 +169,9 @@ body {
 .user-profile {
   display: flex;
   align-items: center;
+
 }
+
 .user-profile a button {
   background: linear-gradient(90deg, #5d9cec, #8e44ad); /* Gradient colors */
   color: white;
@@ -204,8 +206,8 @@ body {
   flex-direction: row;
 }
 
-.dropdown p{
-  margin-left: 100px;
+.username{
+  padding-right: 10px;
 }
 
 .dropdown-menu {

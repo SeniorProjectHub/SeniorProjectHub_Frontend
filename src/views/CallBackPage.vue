@@ -27,7 +27,9 @@ onMounted(async () => {
 
         if (roleResponse.status === 200) {
           const userRole = roleResponse.data.role;
+          const userName = roleResponse.data.username
           localStorage.setItem('user_role', userRole);
+          localStorage.setItem('user_name', userName)
 
           if (userRole === 'admin') {
             router.push('/admin');
