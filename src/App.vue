@@ -18,7 +18,21 @@
       <RouterLink v-if="isStudentRoute" to="/student/question" class="nav-link">Q&A</RouterLink>
     </nav>
     <div class="user-profile">
-      <button v-if="isLoggedIn" @click="logout">Logout</button>
+      <a v-if="isLoggedIn">
+        <div class="dropdown">
+          <p>{{ userRole }}</p>
+          <img
+            src="/src/assets/profile_icon.png"
+            alt="Profile Icon"
+            class="profile-icon"
+            @click="toggleDropdown"
+          />
+          <div v-if="showDropdown" class="dropdown-menu">
+            <p>{{ userName }}</p>
+            <button @click="logout">Logout</button>
+          </div>
+        </div>
+      </a>
       <a v-else href="login">
         <button>Login</button>
       </a>
@@ -30,23 +44,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()
 
-const token = ref(localStorage.getItem('access_token'));
-const isLoggedIn = ref(!!token.value)
+// Retrieve token from localStorage
+const token = ref(localStorage.getItem('access_token'))
 
-onMounted(() => {
-  if (!isLoggedIn.value) {
-    token.value = localStorage.getItem('access_token')
-    isLoggedIn.value = !!token.value
-  }
-});
+// Computed property to determine if the user is logged in
+const isLoggedIn = computed(() => !!token.value)
 
-console.log('Token:', token.value);
+const userName = ref('John Doe');  // You can replace this with actual name fetching
+const userRole = ref(localStorage.getItem('user_role') || 'Guest'); 
+
+const showDropdown = ref(false);
+const toggleDropdown = () => {
+  showDropdown.value = !showDropdown.value;
+};
+
+console.log('Token:', token.value)
 
 const isAdminRoute = computed(() => {
   return [
@@ -88,10 +106,11 @@ const logoLink = computed(() => {
 
 // Logout function
 const logout = () => {
-  localStorage.removeItem('access_token')
-  token.value = null
-  router.push('/')
-}
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('user_role');  // Clear the role as well
+  token.value = null;
+  router.push('/');
+};
 </script>
 
 <style scoped>
@@ -151,8 +170,74 @@ body {
   display: flex;
   align-items: center;
 }
+.user-profile a button {
+  background: linear-gradient(90deg, #5d9cec, #8e44ad); /* Gradient colors */
+  color: white;
+  border: 2px solid white;
+  border-radius: 50px; /* Rounded edges */
+  padding: 10px 30px; /* Adjust padding for size */
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.user-profile a button:hover {
+  transform: scale(1.05); /* Scale up slightly on hover */
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); /* Add subtle shadow */
+}
+
+.user-profile a {
+  text-decoration: none;
+}
 
 .user-profile img {
-  height: 30px;
+  height: 50px;
+  
+}
+
+.dropdown {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+}
+
+.dropdown p{
+  margin-left: 100px;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background-color: white;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 10px;
+  min-width: 150px;
+  z-index: 100;
+}
+
+.dropdown-menu p {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.dropdown-menu button {
+  background-color: #5D9CEC;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-top: 10px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.dropdown-menu button:hover {
+  background-color: #4A8BE0;
 }
 </style>
