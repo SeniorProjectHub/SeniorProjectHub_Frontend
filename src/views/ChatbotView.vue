@@ -42,7 +42,7 @@
                   <ul>
                     <li v-for="ref in message.references" :key="ref._id">
                       <a
-                        :href="`/information/${ref._id}`"
+                        :href="`/student/information/${ref._id}`"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
